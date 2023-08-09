@@ -1,0 +1,3 @@
+[submodule "soroban-example-dapp"]
+	path = soroban-example-dapp
+	url = https://github.com/stellar/soroban-example-dapp
