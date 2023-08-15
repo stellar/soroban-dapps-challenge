@@ -1,7 +1,7 @@
 const fs = require('fs');
 const axios = require('axios');
 
-fs.readFile('challenge/output.txt', async (err, inputD) => {
+fs.readFile('./crowdfund/challenge/output.txt', async (err, inputD) => {
   const challengeId = 0;
   if (err) throw err;
     var lines = inputD.toString().split('\n');
