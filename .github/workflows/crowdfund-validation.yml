@@ -19,10 +19,10 @@ jobs:
       - name: Validate challenge milestones output
         run: node crowdfund/validate-challenge.js
       
-      - name: Install GH CLI
-        uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
+      # - name: Install GH CLI
+      #   uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
 
-      - name: Close Pull
-        run: gh pr close ${{ github.event.pull_request.number }}
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      # - name: Close Pull
+      #   run: gh pr close ${{ github.event.pull_request.number }}
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
