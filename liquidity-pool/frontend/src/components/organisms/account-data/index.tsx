@@ -9,7 +9,7 @@ import { Balance } from "components/molecules"
 import { IToken } from "interfaces/soroban/token"
 import { TokenAIcon, TokenBIcon, TokenLPIcon } from 'components/icons';
 import { mint as mintA } from 'token-a-contract'
-import { mint as mintB } from 'token-B-contract'
+import { mint as mintB } from 'token-b-contract'
 
 interface IAccountData {
     sorobanContext: SorobanContextType;

@@ -12,7 +12,7 @@ import { LiquidityActions, AccountData } from 'components/organisms'
 import { Utils } from 'shared/utils'
 import { TokenAIcon, TokenBIcon } from "components/icons"
 import * as tokenAContract from 'token-a-contract'
-import * as tokenBContract from 'token-B-contract'
+import * as tokenBContract from 'token-b-contract'
 import * as shareTokenContract from 'share-token-contract'
 import * as liquidityPoolContract from 'liquidity-pool-contract'
 
