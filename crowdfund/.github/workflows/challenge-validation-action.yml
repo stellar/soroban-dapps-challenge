@@ -1,0 +1,28 @@
+name: 'Crowdfund challenge validation'
+
+on: 
+  pull_request:
+    branches:
+      - challenge
+
+jobs:
+  challenge_check:
+    runs-on: ubuntu-latest
+    container: node:16
+
+    steps:
+      - name: Branch checkout
+        uses: actions/checkout@v3
+      
+      - run: npm install axios
+
+      - name: Validate challenge milestones output
+        run: node validate-challenge.js
+      
+      - name: Install GH CLI
+        uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
+
+      - name: Close Pull
+        run: gh pr close ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
