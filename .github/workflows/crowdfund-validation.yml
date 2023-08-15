@@ -17,7 +17,7 @@ jobs:
       - run: npm install axios
 
       - name: Validate challenge milestones output
-        run: node validate-challenge.js
+        run: node crowdfund/validate-challenge.js
       
       - name: Install GH CLI
         uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
