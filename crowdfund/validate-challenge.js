@@ -1,31 +1,52 @@
-const fs = require('fs');
-const axios = require('axios');
+var fs = require('fs');
+var axios = require('axios');
 
-fs.readFile('./crowdfund/challenge/output.txt', async (err, inputD) => {
-  const challengeId = 0;
+var crowdfundChallengeId = 0;
+
+/**
+ * Read the data from the output file and update 
+ * the user progress on data validation. 
+ */
+fs.readFile('./crowdfund/challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
-    var lines = inputD.toString().split('\n');
-    console.log(lines[0]);
-    console.log(lines[1]);
-    console.log(lines[2]);
-    var userId = lines[0].split(":")[1].trim();
-    if (!validateContract(lines[1])) {
-      var errorMsg = "Contract validation failed! Check the id!";
-      throw new Error(errorMsg);
+    var outputData = inputData.toString().split('\n');
+    var user = outputData[0];
+    var contract = outputData[1];
+    var link = outputData[2];
+    console.log(user);
+    console.log(contract);
+    console.log(link);
+    //todo: Discover if it is needed to check the user existence in the system by http GET request.
+    var userId = user.split(":")[1].trim();
+    if (!validateContract(contract)) {
+      throw new Error("Contract validation failed! Check the id!");
     }
-    if (!validateFinalLink(lines[2])) {
-      var errorMsg = "Production link validation failed! Check the link address!";
-      throw new Error(errorMsg);
+    if (!validateFinalLink(link)) {
+      throw new Error("Production link validation failed! Check the link address!");
     };
-    sendRequest(true, userId);
+    sendCompleteChallengeRequest(userId);
 })
 
+/**
+ * Contract validation.
+ * Sophisticated validation logic should be added during the project evolution. 
+ * 
+ * @param {string} contractId The contract Id received from the challenge. 
+ * @returns {boolean} True if the contract Id passed the validation.
+ */
 function validateContract(contractId) {
   var contractData = contractId.split(" ");
   var id = contractData[contractData.length - 1].trim();
   return id.length == 56;
 };
 
+/**
+ * Public url validation received from the challenge.
+ * Sophisticated validation logic should be added during the project evolution. 
+ * 
+ * @param {string} link The public link from the challenge's checkpoint. 
+ * @returns {boolean} True if the link passed the validation.
+ */
 function validateFinalLink(link) {
   var linkData = link.split(" ");
   for (i = 0; i < linkData.length; i++) {
@@ -37,15 +58,21 @@ function validateFinalLink(link) {
   return false;
 };
 
-async function sendRequest(isCompleted, userId) {
-  var challengeId = 0;
-  console.log(`The request is sending to user=${userId} with status isCompleted=${isCompleted}`);
+/**
+ * Update the user Progress: set the challenge is completed.
+ * 
+ * @param {string} userId The user's public key (id).  
+ */
+async function sendCompleteChallengeRequest(userId) {
+  //todo: hide the link to the environment variables after testing phase (local and repository)
+  var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
+  console.log(`The complete challenge request is sending to the user=${userId}`);
   await axios({
     method: 'put',
-    url: 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/',
+    url: challengeApiUrl,
     data: {
-      userId: `${userId}:${challengeId}`,
-      isCompleted: isCompleted
+      userId: `${userId}:${crowdfundChallengeId}`,
+      isCompleted: true
     }
   });
   console.log("The request was sent!");
