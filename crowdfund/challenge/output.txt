@@ -1,3 +1,3 @@
-public key: 
-contract Id: 
-production: 
+public key: GCBG6A2ZJ3YPADOZAH647T2WJG3IUKW6XIL3OPIITIBOQTA3TCREKH62
+contract Id: CBKY7UN5VGD4LIQFOBOTSUSQWK67BZZTA23NIEVWSWRR5SAT26JQN2BN
+production: https://soroban-example-dapp-rho.vercel
