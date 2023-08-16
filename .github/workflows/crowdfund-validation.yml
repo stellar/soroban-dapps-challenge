@@ -29,6 +29,5 @@ jobs:
       - name: Close Pull Request and delete the remote branch
         run: gh pr close ${{ github.event.pull_request.number }}
             --comment "Auto-closing PR as verification completed"
-            --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
