@@ -7,19 +7,17 @@ import { ConnectButton } from "components/atoms"
 
 import { Balance } from "components/molecules"
 import { IToken } from "interfaces/soroban/token"
-import { TokenAIcon, TokenBIcon, TokenLPIcon } from 'components/icons';
+import { TokenAIcon, TokenLPIcon } from 'components/icons';
 import { mint as mintA } from 'token-a-contract'
-import { mint as mintB } from 'token-b-contract'
 
 interface IAccountData {
     sorobanContext: SorobanContextType;
     tokenA: IToken;
-    tokenB: IToken;
     shareToken: IToken;
     onUpdate: () => void;
 }
 
-const AccountData: FunctionComponent<IAccountData> = ({ sorobanContext, tokenA, tokenB, shareToken, onUpdate }) => {
+const AccountData: FunctionComponent<IAccountData> = ({ sorobanContext, tokenA, shareToken, onUpdate }) => {
     const account = sorobanContext.address
     return (
         <div className={styles.card}>
@@ -28,7 +26,6 @@ const AccountData: FunctionComponent<IAccountData> = ({ sorobanContext, tokenA, 
                 <BalanceData
                     account={account}
                     tokenA={tokenA}
-                    tokenB={tokenB}
                     shareToken={shareToken}
                     onUpdate={onUpdate}
                 />
@@ -41,13 +38,12 @@ const AccountData: FunctionComponent<IAccountData> = ({ sorobanContext, tokenA, 
 
 interface IBalanceData {
     tokenA: IToken;
-    tokenB: IToken;
     shareToken: IToken;
     account: string;
     onUpdate: () => void;
 }
 
-const BalanceData: FunctionComponent<IBalanceData> = ({ tokenA, tokenB, shareToken, account, onUpdate }) => {
+const BalanceData: FunctionComponent<IBalanceData> = ({ tokenA, shareToken, account, onUpdate }) => {
     return (
         <>
             <div className={styles.address}>
@@ -60,14 +56,6 @@ const BalanceData: FunctionComponent<IBalanceData> = ({ tokenA, tokenB, shareTok
                     balance={tokenA.balance || BigInt(0)}
                     mint={mintA}
                     icon={TokenAIcon}
-                    onUpdate={onUpdate}
-                />
-                <Balance
-                    account={account}
-                    token={tokenB}
-                    balance={tokenB.balance || BigInt(0)}
-                    mint={mintB}
-                    icon={TokenBIcon}
                     onUpdate={onUpdate}
                 />
                 <Balance

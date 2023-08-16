@@ -16,7 +16,7 @@
     "axios": "^1.4.0",
     "bignumber.js": "^9.1.1",
     "classnames": "^2.3.2",
-    "liquidity-pool-contract": "file:../.soroban/contracts/liquidity-pool",
+    "vault-contract": "file:../.soroban/contracts/vault",
     "lodash": "~4.17.21",
     "react": "^18.2.0",
     "react-currency-format": "github:mohitgupta8888/react-currency-format#4f365ec5005e23451a3b95da1a209b0025622b8d",
@@ -30,7 +30,6 @@
     "share-token-contract": "file:../.soroban/contracts/share-token",
     "soroban-client": "^0.9.2",
     "token-a-contract": "file:../.soroban/contracts/token-a",
-    "token-b-contract": "file:../.soroban/contracts/token-b",
     "typescript": "^4.3.5",
     "web-vitals": "^3.3.2",
     "yup": "^1.2.0"

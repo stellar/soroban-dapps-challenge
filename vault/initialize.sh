@@ -7,9 +7,9 @@ NETWORK="$1"
 SOROBAN_RPC_HOST="$2"
 
 WASM_PATH="target/wasm32-unknown-unknown/release/"
-LIQUIDITY_POOL_WASM=$WASM_PATH"soroban_liquidity_pool_contract.optimized.wasm"
+VAULT_WASM=$WASM_PATH"soroban_vault_contract.optimized.wasm"
 ABUNDANCE_WASM=$WASM_PATH"abundance_token.optimized.wasm"
-TOKEN_WASM="contracts/liquidity-pool/token/soroban_token_contract.wasm"
+TOKEN_WASM="contracts/vault/token/soroban_token_contract.wasm"
 
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
@@ -72,16 +72,16 @@ ARGS="--network $NETWORK --source token-admin"
 echo "Building contracts"
 soroban contract build
 echo "Optimizing contracts"
-soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
+soroban contract optimize --wasm $WASM_PATH"soroban_vault_contract.wasm"
 soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
 
 
-echo Deploy the liquidity pool contract
-LIQUIDITY_POOL_ID="$(
+echo Deploy the vault contract
+VAULT_ID="$(
   soroban contract deploy $ARGS \
-    --wasm $LIQUIDITY_POOL_WASM
+    --wasm $VAULT_WASM
 )"
-echo "Liquidity Pool contract deployed succesfully with ID: $LIQUIDITY_POOL_ID"
+echo "Vault contract deployed succesfully with ID: $VAULT_ID"
 
 echo Deploy the abundance token A contract
 ABUNDANCE_A_ID="$(
@@ -89,22 +89,6 @@ ABUNDANCE_A_ID="$(
     --wasm $ABUNDANCE_WASM
 )"
 echo "Contract deployed succesfully with ID: $ABUNDANCE_A_ID"
-
-echo Deploy the abundance token B contract
-ABUNDANCE_B_ID="$(
-  soroban contract deploy $ARGS \
-    --wasm $ABUNDANCE_WASM
-)"
-echo "Contract deployed succesfully with ID: $ABUNDANCE_B_ID"
-
-
-if [[ "$ABUNDANCE_B_ID" < "$ABUNDANCE_A_ID" ]]; then
-  echo Changing tokens order
-  OLD_ABUNDANCE_A_ID=$ABUNDANCE_A_ID
-  ABUNDANCE_A_ID=$ABUNDANCE_B_ID
-  ABUNDANCE_B_ID=$OLD_ABUNDANCE_A_ID
-fi
-
 
 echo "Initialize the abundance token A contract"
 soroban contract invoke \
@@ -118,42 +102,48 @@ soroban contract invoke \
   --admin "$TOKEN_ADMIN_ADDRESS"
 
 
-echo "Initialize the abundance token B contract"
-soroban contract invoke \
-  $ARGS \
-  --id "$ABUNDANCE_B_ID" \
-  -- \
-  initialize \
-  --symbol BTC \
-  --decimal 7 \
-  --name Bitcoin \
-  --admin "$TOKEN_ADMIN_ADDRESS"
-
-
 echo "Installing token wasm contract"
 TOKEN_WASM_HASH="$(soroban contract install \
     $ARGS \
     --wasm $TOKEN_WASM
 )"
 
-
-echo "Initialize the liquidity pool contract"
+echo "Initialize the vault contract"
 soroban contract invoke \
   $ARGS \
-  --wasm $LIQUIDITY_POOL_WASM \
-  --id "$LIQUIDITY_POOL_ID" \
+  --wasm $VAULT_WASM \
+  --id "$VAULT_ID" \
   -- \
   initialize \
   --token_wasm_hash "$TOKEN_WASM_HASH" \
-  --token_a "$ABUNDANCE_A_ID" \
-  --token_b "$ABUNDANCE_B_ID"
+  --token "$ABUNDANCE_A_ID"
+
+echo "Fund the vault contract"
+soroban contract invoke \
+  $ARGS \
+  --id "$ABUNDANCE_A_ID" \
+  -- \
+  mint \
+  --to "$TOKEN_ADMIN_ADDRESS" \
+  --amount 10000000000
+
+soroban contract invoke \
+  $ARGS \
+  --wasm $VAULT_WASM \
+  --id "$VAULT_ID" \
+  -- \
+  deposit \
+  --from "$TOKEN_ADMIN_ADDRESS" \
+  --amount 10000000000
+
+echo "1000 USDC deposited to the vault contract"
 
 
 echo "Getting the share id"
 SHARE_ID="$(soroban contract invoke \
   $ARGS \
-  --wasm $LIQUIDITY_POOL_WASM \
-  --id "$LIQUIDITY_POOL_ID" \
+  --wasm $VAULT_WASM \
+  --id "$VAULT_ID" \
   -- \
   share_id
 )"
@@ -163,9 +153,8 @@ echo "Share ID: $SHARE_ID"
 
 echo "Generating bindings"
 soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --contract-name token-a --output-dir ".soroban/contracts/token-a"
-soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --contract-name token-b --output-dir ".soroban/contracts/token-b"
-soroban contract bindings typescript --wasm contracts/liquidity-pool/token/soroban_token_contract.wasm --network $NETWORK --contract-id $SHARE_ID --contract-name share-token --output-dir ".soroban/contracts/share-token"
-soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --contract-name liquidity-poo --output-dir ".soroban/contracts/liquidity-pool"
+soroban contract bindings typescript --wasm contracts/vault/token/soroban_token_contract.wasm --network $NETWORK --contract-id $SHARE_ID --contract-name share-token --output-dir ".soroban/contracts/share-token"
+soroban contract bindings typescript --wasm $VAULT_WASM --network $NETWORK --contract-id $VAULT_ID --contract-name vault --output-dir ".soroban/contracts/vault"
 
 echo "Done"
 

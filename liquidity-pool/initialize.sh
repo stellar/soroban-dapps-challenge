@@ -165,7 +165,7 @@ echo "Generating bindings"
 soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --contract-name token-a --output-dir ".soroban/contracts/token-a"
 soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --contract-name token-b --output-dir ".soroban/contracts/token-b"
 soroban contract bindings typescript --wasm contracts/liquidity-pool/token/soroban_token_contract.wasm --network $NETWORK --contract-id $SHARE_ID --contract-name share-token --output-dir ".soroban/contracts/share-token"
-soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --contract-name liquidity-poo --output-dir ".soroban/contracts/liquidity-pool"
+soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --contract-name liquidity-pool --output-dir ".soroban/contracts/liquidity-pool"
 
 echo "Done"
 

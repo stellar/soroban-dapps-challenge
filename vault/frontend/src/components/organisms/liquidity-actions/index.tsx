@@ -2,21 +2,20 @@ import { useState, FunctionComponent, Dispatch, SetStateAction } from 'react'
 
 import styles from './styles.module.scss'
 
-import { Deposit, Swap, Withdraw } from "components/molecules"
+import { Deposit, Withdraw } from "components/molecules"
 import { IToken } from "interfaces/soroban/token"
 import { IReserves } from "interfaces/soroban/liquidityPool"
 
 interface ILiquidityActions {
   account: string;
   tokenA: IToken;
-  tokenB: IToken;
   shareToken: IToken;
   reserves: IReserves;
   totalShares: bigint;
   onUpdate: () => void;
 }
 
-const LiquidityActions: FunctionComponent<ILiquidityActions> = ({ account, tokenA, tokenB, shareToken, reserves, totalShares, onUpdate }) => {
+const LiquidityActions: FunctionComponent<ILiquidityActions> = ({ account, tokenA, shareToken, reserves, totalShares, onUpdate }) => {
   const [activeTab, setActiveTab] = useState("Deposit");
 
   const handleChangeActiveTab = (tab: string): void => {
@@ -27,31 +26,19 @@ const LiquidityActions: FunctionComponent<ILiquidityActions> = ({ account, token
     <div className={styles.card}>
       <div className={styles.header}>
         <HeaderItem activeTab={activeTab} setActiveTab={setActiveTab} label={"Deposit"} />
-        <HeaderItem activeTab={activeTab} setActiveTab={setActiveTab} label={"Swap"} />
         <HeaderItem activeTab={activeTab} setActiveTab={setActiveTab} label={"Withdraw"} />
       </div>
       <div className={styles.content}>
         {activeTab == 'Deposit' && (
           <Deposit
             tokenA={tokenA}
-            tokenB={tokenB}
             account={account}
-            onUpdate={onUpdate}
-          />
-        )}
-        {activeTab == 'Swap' && (
-          <Swap
-            tokenA={tokenA}
-            tokenB={tokenB}
-            account={account}
-            reserves={reserves}
             onUpdate={onUpdate}
           />
         )}
         {activeTab == 'Withdraw' && (
           <Withdraw
             tokenA={tokenA}
-            tokenB={tokenB}
             shareToken={shareToken}
             account={account}
             reserves={reserves}
@@ -85,7 +72,5 @@ const HeaderItem: FunctionComponent<IHeaderItem> = ({ activeTab, setActiveTab, l
     </div>
   )
 }
-
-
 
 export { LiquidityActions }
