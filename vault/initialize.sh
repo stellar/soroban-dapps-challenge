@@ -48,6 +48,9 @@ futurenet)
   ;;
 esac
 
+echo removing old .soroban folder 
+rm -rf .soroban
+
 echo Add the $NETWORK network to cli client
 soroban config network add \
   --rpc-url "$SOROBAN_RPC_URL" \
