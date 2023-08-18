@@ -1,6 +1,6 @@
-name: 'Crowdfund challenge validation'
+name: "Crowdfund challenge validation"
 
-on: 
+on:
   pull_request:
     branches:
       - main
@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Branch checkout
         uses: actions/checkout@v3
-      
+
       - name: Install axios library
         run: npm install axios
 
@@ -26,8 +26,8 @@ jobs:
       - name: Make repository dir a safe directory to allow the worker to close the PR and delete the branch
         run: git config --system --add safe.directory /__w/soroban-dapps-challenge/soroban-dapps-challenge
 
-      - name: Close Pull Request and delete the remote branch
-        run: gh pr close ${{ github.event.pull_request.number }}
-            --comment "Auto-closing PR as verification completed"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Close Pull Request and delete the remote branch
+      #   run: gh pr close ${{ github.event.pull_request.number }}
+      #       --comment "Auto-closing PR as verification completed"
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
