@@ -1,3 +1,3 @@
-public key: 
-contract Id: 
-production: 
+public key: GBT6PZHNWHXLTRDSMIF64AVEEEK7X4AYPJQIU4EVVWB6DWUWDYIE3WSK
+contract Id: CCV2Y6C6NYWXW7JLOFVHVAE4XBBVLLZGUV73H6PETMRPXCBJOISRBO7S
+production: https://soroban-example-dapp-rice2000.vercel.app/
