@@ -23,8 +23,8 @@ fs.readFile('./crowdfund/challenge/output.txt', async (err, inputData) => {
     }
     if (!validateFinalLink(link)) {
       throw new Error("Production link validation failed! Check the link address!");
-    };
-    sendCompleteChallengeRequest(userId);
+    }
+    await sendCompleteChallengeRequest(userId);
 })
 
 /**
@@ -38,7 +38,7 @@ function validateContract(contractId) {
   var contractData = contractId.split(" ");
   var id = contractData[contractData.length - 1].trim();
   return id.length == 56;
-};
+}
 
 /**
  * Public url validation received from the challenge.
@@ -56,7 +56,7 @@ function validateFinalLink(link) {
     }
   }
   return false;
-};
+}
 
 /**
  * Update the user Progress: set the challenge is completed.
