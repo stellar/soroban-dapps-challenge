@@ -1,3 +1,3 @@
-public key: 
-contract Id: 
-production: 
+public key: GA4SFUNCB6IL6I2ZKBPLMK5KJKTB5B24BI5ABCIKUUYW7CQC24TDKOMK
+contract Id: CDX7JCYRVHWWGQXSQ3IGYWFJJH3CPJ4PCXXRB56WUEQ5L2XE7DYAEWRL
+production: https://crowdfund-dapp-alpha.vercel.app
