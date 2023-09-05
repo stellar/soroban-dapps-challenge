@@ -1,0 +1,2 @@
+[alias] # command aliases
+install_soroban = "install --git https://github.com/AhaLabs/soroban-tools --rev b90af8bf9df5a68fd67e3c297e5744ffcd66c07c --root ./target soroban-cli --debug --features opt"

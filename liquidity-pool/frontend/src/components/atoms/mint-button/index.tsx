@@ -4,6 +4,7 @@ import styles from './styles.module.scss'
 
 import { LoadingButton } from '@mui/lab';
 import { IMintFunction } from 'interfaces/soroban/token';
+import { Address } from '../../../contracts';
 
 
 interface IMintButton {
@@ -19,9 +20,9 @@ const MintButton: FunctionComponent<IMintButton> = ({ account, decimals, mint, o
 
   return (
     <LoadingButton
-      onClick={async () => {
+      onClick={async (): Promise<void> => {
         setSubmitting(true)
-        await mint({ to: account, amount: amount }, { signAndSend: true })
+        await mint({ to: new Address(account), amount })
         setSubmitting(false)
         onUpdate()
       }}

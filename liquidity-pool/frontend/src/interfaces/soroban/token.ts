@@ -1,3 +1,5 @@
+import { Address } from '../../contracts'
+
 interface IToken {
     symbol: string;
     decimals: number;
@@ -5,12 +7,11 @@ interface IToken {
 }
 
 interface IMintParams {
-    to: string;
+    to: Address;
     amount: bigint;
 }
 
 interface IMintOptions {
-    signAndSend?: boolean;
     fee?: number;
 }
 
