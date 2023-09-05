@@ -11,6 +11,19 @@ LIQUIDITY_POOL_WASM=$WASM_PATH"soroban_liquidity_pool_contract.optimized.wasm"
 ABUNDANCE_WASM=$WASM_PATH"abundance_token.optimized.wasm"
 TOKEN_WASM="contracts/liquidity-pool/token/soroban_token_contract.wasm"
 
+PATH=./target/bin:$PATH
+
+if [[ -d "./.soroban/contracts" ]]; then
+  echo "Found existing './.soroban/contracts' directory; already initialized."
+  exit 0
+fi
+
+if [[ -f "./target/bin/soroban" ]]; then
+  echo "Using soroban binary from ./target/bin"
+else
+  echo "Building pinned soroban binary"
+  cargo install_soroban
+fi
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
   # If soroban-cli is called inside the soroban-preview docker container,
@@ -162,10 +175,10 @@ echo "Share ID: $SHARE_ID"
 
 
 echo "Generating bindings"
-soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --contract-name token-a --output-dir ".soroban/contracts/token-a"
-soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --contract-name token-b --output-dir ".soroban/contracts/token-b"
-soroban contract bindings typescript --wasm contracts/liquidity-pool/token/soroban_token_contract.wasm --network $NETWORK --contract-id $SHARE_ID --contract-name share-token --output-dir ".soroban/contracts/share-token"
-soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --contract-name liquidity-pool --output-dir ".soroban/contracts/liquidity-pool"
+soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
+soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
+soroban contract bindings typescript --network $NETWORK --contract-id $SHARE_ID --output-dir ".soroban/contracts/share-token" --overwrite
+soroban contract bindings typescript --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
 
 echo "Done"
 

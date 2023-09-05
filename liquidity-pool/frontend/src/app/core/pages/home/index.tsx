@@ -11,10 +11,13 @@ import { LiquidityActions, AccountData } from 'components/organisms'
 
 import { Utils } from 'shared/utils'
 import { TokenAIcon, TokenBIcon } from "components/icons"
-import * as tokenAContract from 'token-a-contract'
-import * as tokenBContract from 'token-b-contract'
-import * as shareTokenContract from 'share-token-contract'
-import * as liquidityPoolContract from 'liquidity-pool-contract'
+import {
+  Address,
+  tokenAContract,
+  tokenBContract,
+  shareTokenContract,
+  liquidityPoolContract,
+} from '../../../../contracts'
 
 import { IToken } from 'interfaces/soroban/token';
 import { IReserves } from 'interfaces/soroban/liquidityPool';
@@ -71,9 +74,9 @@ const Home = (): JSX.Element => {
     });
     if (account) {
       Promise.all([
-        tokenAContract.balance({ id: account }),
-        tokenBContract.balance({ id: account }),
-        shareTokenContract.balance({ id: account })
+        tokenAContract.balance({ id: new Address(account) }),
+        tokenBContract.balance({ id: new Address(account) }),
+        shareTokenContract.balance({ id: new Address(account) })
       ]).then(fetched => {
         setTokenA(prevTokenA => ({
           ...prevTokenA,
@@ -104,7 +107,7 @@ const Home = (): JSX.Element => {
           tokenA={tokenA}
           tokenB={tokenB}
           shareToken={shareToken}
-          onUpdate={() => setUpdatedAt(Date.now())}
+          onUpdate={(): void => setUpdatedAt(Date.now())}
         />
         <div className={styles.poolContent}>
           {sorobanContext.activeChain &&
@@ -145,7 +148,7 @@ const Home = (): JSX.Element => {
                 shareToken={shareToken}
                 reserves={reserves}
                 totalShares={totalShares}
-                onUpdate={() => setUpdatedAt(Date.now())}
+                onUpdate={(): void => setUpdatedAt(Date.now())}
               />
             ) : (
               <div className={styles.card}>

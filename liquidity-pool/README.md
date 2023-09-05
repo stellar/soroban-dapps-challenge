@@ -13,7 +13,8 @@ Getting Started
 Install Dependencies
 --------------------
 
-1. `soroban-cli v0.9.4`. See https://soroban.stellar.org/docs/getting-started/setup#install-the-soroban-cli
+0. Rust with `wasm32-unknown-unknown` target; see [Setup instructions](https://soroban.stellar.org/docs/getting-started/setup#install-rust)
+1. The version of `soroban-cli` specified in [.cargo/config.toml](./.cargo/config.toml)—this will be **installed automatically** the first time you run the `./initialize.sh` script. It will be built to the local `target/bin` directory. You can add `~/target/bin` [to your PATH](https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path) to automatically use this version if you're in this directory (or any other with a `target/bin/soroban`) every time you type just `soroban`.
 2. If you want to run the Soroban RPC locally: `docker` (you can run both Standalone and Futurenet backends with it)
 3. `Node.js v16`
 4. [Freighter Wallet](https://www.freighter.app/) ≥[v5.0.2](https://github.com/stellar/freighter/releases/tag/2.9.1). Or from the Firefox / Chrome extension store. Once installed, enable "Experimental Mode" in the settings (gear icon).
@@ -25,8 +26,6 @@ Run Backend
 You have three options: 1. Deploy on [Futurenet](https://soroban.stellar.org/docs/getting-started/deploy-to-futurenet) using a remote [RPC](https://soroban.stellar.org/docs/getting-started/run-rpc) endpoint, 2. Run your own Futerenet RPC node with Docker and deploy to it, 3. run in [localnet/standalone](https://soroban.stellar.org/docs/getting-started/deploy-to-a-local-network) mode.
 
 ### Option 1: Deploy on Futurenet
-
-0. Make sure you have soroban-cli installed, as explained above
 
 1. Deploy the contracts and initialize them
 
