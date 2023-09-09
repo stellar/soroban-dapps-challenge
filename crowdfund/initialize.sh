@@ -6,18 +6,9 @@ NETWORK="$1"
 
 SOROBAN_RPC_HOST="$2"
 
-PATH=./target/bin:$PATH
-
 if [[ -f "./.soroban-example-dapp/crowdfund_id" ]]; then
   echo "Found existing './.soroban-example-dapp' directory; already initialized."
   exit 0
-fi
-
-if [[ -f "./target/bin/soroban" ]]; then
-  echo "Using soroban binary from ./target/bin"
-else
-  echo "Building pinned soroban binary"
-  cargo install_soroban
 fi
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
@@ -121,4 +112,11 @@ soroban contract invoke \
   --deadline "$deadline" \
   --target_amount "1000000000" \
   --token "$ABUNDANCE_ID"
+echo "Done"
+
+echo build typescript bindings for contracts
+soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/soroban_crowdfund_contract.wasm --network $NETWORK --id $CROWDFUND_ID --output-dir ./.soroban/crowdfund-contract --contract-name CrowdfundContract
+
+soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/abundance_token.wasm --network $NETWORK --id $ABUNDANCE_ID --output-dir ./.soroban/abundance-token --contract-name AbundanceToken
+
 echo "Done"
