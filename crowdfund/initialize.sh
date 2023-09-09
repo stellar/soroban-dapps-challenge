@@ -110,7 +110,7 @@ soroban contract invoke \
   initialize \
   --recipient "$ABUNDANCE_ADMIN_ADDRESS" \
   --deadline "$deadline" \
-  --target_amount "1000000000" \
+  --target_amount "10000000000" \
   --token "$ABUNDANCE_ID"
 echo "Done"
 
