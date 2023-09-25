@@ -1,0 +1,52 @@
+{
+  "name": "soroban-oracle-project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "setup": "npm run clean && ./initialize.sh ${NETWORK:-futurenet} && npm run build-contracts && npm install",
+    "clean": "rm -rf .next .soroban .soroban-example-dapp",
+    "reset": "npm run clean && npm run setup",
+    "build-contracts": "soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/soroban_oracle_contract.wasm --id $(cat ./.soroban-example-dapp/oracle_id) --rpc-url $(cat ./.soroban-example-dapp/rpc-url) --network-passphrase \"$(cat ./.soroban-example-dapp/passphrase)\" --output-dir ./.soroban/oracle-contract --contract-name oracle-contract          && soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/btc_token.wasm --id $(cat ./.soroban-example-dapp/btc_token_id) --rpc-url $(cat ./.soroban-example-dapp/rpc-url) --network-passphrase \"$(cat ./.soroban-example-dapp/passphrase)\" --output-dir ./.soroban/btc-token --contract-name btc-token          && soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/donation_contract.wasm --id $(cat ./.soroban-example-dapp/donation_id) --rpc-url $(cat ./.soroban-example-dapp/rpc-url) --network-passphrase \"$(cat ./.soroban-example-dapp/passphrase)\" --output-dir ./.soroban/donation-contract --contract-name donation-contract"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.1.0",
+    "@chakra-ui/react": "^2.8.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@tabler/icons-react": "^2.32.0",
+    "@thirdweb-dev/react": "^3.14.37",
+    "axios": "^0.27.2",
+    "bigint-conversion": "^2.4.1",
+    "btc-token": "file:.soroban/btc-token",
+    "donation-contract": "file:.soroban/donation-contract",
+    "framer-motion": "^10.16.1",
+    "humanize-duration": "^3.29.0",
+    "moment": "^2.29.4",
+    "oracle-contract": "file:.soroban/oracle-contract",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.11",
+    "react-hook-form": "^7.45.4",
+    "react-router-dom": "^6.15.0",
+    "soroban-client": "^0.9.2",
+    "stellar-wallets-kit": "github:Creit-Tech/Stellar-Wallets-Kit",
+    "zustand": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "eslint": "^8.48.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}
