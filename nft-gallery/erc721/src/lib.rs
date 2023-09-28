@@ -22,7 +22,7 @@ pub struct ERC721Contract;
 impl ERC721 for ERC721Contract {
     fn balance_of(env: Env, owner: Address) -> u32 {
         DataKey::Balance(owner)
-            .bump(&env, 1000)
+            .bump(&env, 1000, 10000)
             .get(&env)
             .unwrap_or(0)
     }
@@ -263,7 +263,7 @@ impl ERC721Contract {
         }
         Admin::User.set(&env, &admin);
 
-        env.storage().instance().bump(10000);
+        env.storage().instance().bump(10000, 100000);
         if cfg!(feature = "metadata") {
             env.storage().instance().set(&DatakeyMetadata::Name, &name);
             env.storage()

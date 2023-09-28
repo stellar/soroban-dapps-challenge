@@ -55,6 +55,9 @@ pub struct OrderBook {
 pub const CONTRACT: Symbol = symbol_short!("CONTRACT");
 pub const ORDER_BOOK: Symbol = symbol_short!("BOOK");
 
+const MIN_BUMP: u32 = 600_000;
+const MAX_BUMP: u32 = 6_000_000;
+
 #[contract]
 pub struct MarketPlace;
 
@@ -68,7 +71,7 @@ impl MarketPlace {
             panic!("Already initialized");
         }
         env.storage().instance().set(&CONTRACT, &contract);
-        env.storage().instance().bump(6000000);
+        env.storage().instance().bump(MIN_BUMP, MAX_BUMP);
     }
     pub fn sell(
         env: Env,
@@ -110,12 +113,12 @@ impl MarketPlace {
         env.storage().temporary().set(&ORDER_BOOK, &order_book);
         env.storage()
             .temporary()
-            .bump(&ORDER_BOOK, expiration_ledger - env.ledger().sequence());
+            .bump(&ORDER_BOOK, expiration_ledger - env.ledger().sequence(), expiration_ledger);
 
         env.storage().temporary().set(&nft, &price);
         env.storage()
             .temporary()
-            .bump(&nft, expiration_ledger - env.ledger().sequence());
+            .bump(&nft, expiration_ledger - env.ledger().sequence(), expiration_ledger);
     }
     pub fn buy(env: Env, buyer: Address, nft: Nft) {
         buyer.require_auth();
