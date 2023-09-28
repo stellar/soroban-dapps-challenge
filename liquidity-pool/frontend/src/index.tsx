@@ -5,8 +5,6 @@ import { createRoot } from 'react-dom/client'
 import reportWebVitals from './config/reportWebVitals'
 import App from 'app/core/App'
 
-import MySorobanReactProvider from './soroban/provider';
-
 import './index.css'
 
 Sentry.init({
@@ -21,9 +19,7 @@ Sentry.init({
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MySorobanReactProvider>
-      <App />
-    </MySorobanReactProvider>
+    <App />
   </React.StrictMode>
 )
 
