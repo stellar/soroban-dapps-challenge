@@ -1,0 +1,39 @@
+name: NodeJS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+
+  complete:
+    if: always()
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+    steps:
+    - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+      run: exit 1
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: stellar/actions/rust-cache@main
+    - run: rustup update
+    - run: rustup target add wasm32-unknown-unknown
+    - run: make build
+    - run: cargo install_soroban
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18.14.2
+        cache: 'npm'
+    - run: |
+        mkdir -p .soroban-example-dapp
+        echo 'futurenet' > .soroban-example-dapp/network
+        echo 'CC757WDV3G442WQCNPNOA2UEXOC7UJD5VP4BLLCRDW5LRM6UZZR6ISVU' > .soroban-example-dapp/abundance_token_id
+        echo 'CCHCPXECLYGX4QU34ZZOHP6C6KVAPIDTUNPIUA6GF4SP6ECFF5BX57OG' > .soroban-example-dapp/crowdfund_id
+        echo 'Standalone Network ; February 2017' > .soroban-example-dapp/passphrase
+        echo 'https://rpc-futurenet.stellar.org/' > .soroban-example-dapp/rpc-url
+    - run: npm ci
+    - run: npm run build
