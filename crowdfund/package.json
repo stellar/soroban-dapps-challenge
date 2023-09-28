@@ -13,17 +13,17 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.0.2",
-    "@stellar/freighter-api": "^1.5.1",
+    "abundance-token": "file:.soroban/abundance-token",
     "axios": "^0.27.2",
     "bigint-conversion": "^2.4.1",
+    "crowdfund-contract": "file:.soroban/crowdfund-contract",
     "humanize-duration": "^3.27.3",
     "moment": "^2.29.4",
-    "next": "^13.4.4",
+    "next": "^13.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "soroban-client": "0.9.2",
-    "crowdfund-contract": "file:.soroban/crowdfund-contract",
-    "abundance-token": "file:.soroban/abundance-token"
+    "stellar-wallets-kit": "github:Creit-Tech/Stellar-Wallets-Kit"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1",

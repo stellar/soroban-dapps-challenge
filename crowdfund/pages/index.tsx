@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { Campaign, Pledge } from '../components/organisms'
 import { WalletData } from '../components/molecules'
+import { AppProvider } from '../context/appContext'
 
 const Home: NextPage = () => {
   return (
-    <>
+    <AppProvider>
       <Head>
         <title>
           Crowdfund Template - An example of how to run a crowdfund campaign on
@@ -30,7 +31,7 @@ const Home: NextPage = () => {
           <Pledge />
         </div>
       </main>
-    </>
+    </AppProvider>
   )
 }
 
