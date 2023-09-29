@@ -1,9 +1,9 @@
-name: "Crowdfund challenge validation"
+name: "Challenges validation"
 
 on: pull_request_target
 
 jobs:
-  challenge_check:
+  challenges_check:
     runs-on: ubuntu-latest
     container: node
 
@@ -15,12 +15,18 @@ jobs:
 
       - name: Install axios library
         run: npm install axios
-
-      - name: Validate crowdfund challenge
+        
+      - name: Validate Crowdfund challenge
         run: node crowdfund/validate-challenge.js
 
-  close-pr:
-    needs: challenge_check
+      - name: Validate Crypto Oracle challenge
+        run: node crypto-oracle/validate-challenge.js
+
+      - name: Validate NFT Gallery challenge
+        run: node nft-gallery/validate-challenge.js
+
+  close_pr:
+    needs: challenges_check
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +39,7 @@ jobs:
           ref: ${{ github.event.pull_request.github_sha }}
 
       - name: Close Pull
-        run: gh pr close ${{ github.event.pull_request.number }} 
-            --comment "Auto-closing PR on challenge verification completed."
+        run: gh pr close ${{ github.event.pull_request.number }}
+          --comment "Auto-closing PR on challenge verifications completed."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
