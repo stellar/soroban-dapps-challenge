@@ -15,7 +15,7 @@ jobs:
 
       - name: Install axios library
         run: npm install axios
-        
+
       - name: Validate Crowdfund challenge
         run: node crowdfund/validate-challenge.js
 
@@ -39,7 +39,7 @@ jobs:
           ref: ${{ github.event.pull_request.github_sha }}
 
       - name: Close Pull
-        run: gh pr close ${{ github.event.pull_request.number }}
-          --comment "Auto-closing PR on challenge verifications completed."
+        run: gh pr close ${{ github.event.pull_request.number }} 
+            --comment "Auto-closing PR on challenge verifications completed."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
