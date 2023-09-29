@@ -118,7 +118,11 @@ impl OracleContract {
 
     pub fn update_pair_epoch_interval(e: Env, caller: Address, epoch_interval: u32) -> PairInfo {
         caller.require_auth();
-        assert_eq!(caller, Self::get_contract_owner(e.clone()), "Caller is not the contract owner");
+        assert_eq!(
+            caller,
+            Self::get_contract_owner(e.clone()),
+            "Caller is not the contract owner"
+        );
 
         let mut pair_info = Self::get_pair_info(e.clone());
         pair_info.epoch_interval = epoch_interval.clone();
@@ -132,7 +136,11 @@ impl OracleContract {
         new_relayer_address: Address,
     ) -> PairInfo {
         caller.require_auth();
-        assert_eq!(caller, Self::get_contract_owner(e.clone()), "Caller is not the contract owner");
+        assert_eq!(
+            caller,
+            Self::get_contract_owner(e.clone()),
+            "Caller is not the contract owner"
+        );
 
         let mut pair_info = Self::get_pair_info(e.clone());
         pair_info.relayer = new_relayer_address.clone();
@@ -142,7 +150,11 @@ impl OracleContract {
 
     pub fn set_epoch_data(e: Env, caller: Address, value: u32) -> EpochData {
         caller.require_auth();
-        assert_eq!(caller, Self::get_relayer(e.clone()), "Only relayer can set new data");
+        assert_eq!(
+            caller,
+            Self::get_relayer(e.clone()),
+            "Only relayer can set new data"
+        );
 
         let mut last_epoch = Self::get_last_data_epoch(e.clone());
         last_epoch += 1u32;
