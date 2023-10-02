@@ -1,0 +1,172 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SmallFrame from '../../components/SmallFrame.astro';
+import Connect from '../../components/Connect.astro';
+import Palette from "../../components/Palette.astro";
+import * as million from 'Million';
+// 1. Check the id is below the supply
+// 2. If not logged in or not the owner, display the pixel and the gallery
+// 2. if owner, the pixel is editable, you can set the price on the items in the gallery 
+//
+// 
+const FakeWallet = { isConnected: function()  { return false },};
+const { id } = Astro.params;
+
+// Do not access if does not start with 0x
+if (!id.startsWith("0x")) {
+  return Astro.redirect("/404");
+}
+
+console.log(million.CONTRACT_ID)
+let num = parseInt(id.substring(2), 16);
+let total = await million.totalSupply({wallet: FakeWallet});
+
+// Do not display if not minted
+if (num >= total) {
+  return Astro.redirect("/404");
+}
+
+const owner = await million.ownerOf({token_id: num}, {wallet: FakeWallet});
+let uri = await million.tokenUri({token_id: num}, {wallet: FakeWallet});
+let response = await fetch(uri);
+let data = await response.json();
+
+const image = data.image;
+
+ ---
+<input type="hidden" id="owner" value={owner} /> 
+<Layout title={id}>
+	<main>
+    <div class="homepage"><a href="/">&larr; million lumen homepage</a></div>
+    <Connect />
+    <h1>{id}</h1>
+    <SmallFrame src={image}  />
+    <div id="edit">
+        <input type="file" accept="image/*" id="fileUpload"/>
+        <input type="hidden" id="id" value={id} />
+        <label for="fileUpload">Choose a file</label>
+        <button  id="upload" >Upload</button>
+        <canvas id="thecanvas" width="16px" height="16px" />
+    </div>
+  </main>
+</Layout>
+<style>
+main {
+  background-color: #f7f3b7;
+  min-height: 100vh;
+}
+.homepage {
+  font-weight: bold;
+}
+a, a:visited {
+  text-decoration: none;
+  color: black;
+}
+main {
+  padding: 2em;
+}
+#thecanvas {
+  display: none;
+}
+#edit {
+  display: none;
+  width: fit-content;
+  margin-left: 1em;
+}
+
+input {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+label, button {
+    font-size: 2rem;
+    border-radius: 1rem;
+    border: 1px solid black;
+    padding: 1rem;
+    text-align: center;
+    display: block;
+    width: 15ch;
+    margin: auto;
+    margin-top: 2rem;
+    color: white;
+    background-color: black;
+    cursor: pointer;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25) inset, 0 5px 10px 5px rgba(0, 0, 0, 0.25);
+
+    transition: width 0.1s linear;
+  }
+#upload {
+  display: none;
+}
+</style>
+<script>
+import {getUserInfo, signBlob, signTransaction} from '@stellar/freighter-api';
+import {Keypair} from 'soroban-client';
+
+const {publicKey}= await getUserInfo();
+const owner = document.querySelector("#owner").value;
+console.log(owner)
+console.log(publicKey)
+if (owner == publicKey) {
+  document.querySelector("#edit").style.display = "block"
+}
+const button = document.querySelector("#fileUpload");
+const upload = document.querySelector("#upload");
+const canvas = document.querySelector("#thecanvas");
+button.addEventListener("change", async () => {
+  let files = button.files;
+  if (files.length > 0) {
+    upload.style.display = "block";
+  }
+  let file = files[0];
+  const image = document.querySelector("#smallframe")//createElement("img");
+  const url = URL.createObjectURL(file);
+  var ctx = canvas.getContext("2d");
+  let loaded = false;
+  image.onload = function() {
+    if (!loaded) {
+      loaded = true;
+      ctx.drawImage(image, 0, 0, 16, 16);
+      let png = canvas.toDataURL("image/png");
+      console.log("canvas " + png)
+      image.src=png;
+    }
+  }
+  image.src = url;
+})
+
+const sendButton = document.querySelector("#upload");
+sendButton.addEventListener("click", async () => {
+  if (button.files.length != 1) {
+    return;
+  }
+
+const canvas = document.querySelector("#thecanvas");
+  var ctx = canvas.getContext("2d");
+	console.log(canvas.toDataURL("image/png"))
+  let png = btoa(canvas.toDataURL("image/png"));
+  let signature = await signBlob(png);
+  if (signature.data) {
+    signature = signature.data;
+  }
+  let out = ''
+  signature.forEach((e) =>{
+    out += e.toString(16).padStart(2, '0')
+  });
+  let payload = {
+    data: png,
+    signature: out,
+  }
+
+  let id = document.querySelector("#id").value;
+  let response = await fetch(`/test/${id}.json`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  })
+})
+</script>
