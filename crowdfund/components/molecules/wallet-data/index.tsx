@@ -1,22 +1,27 @@
 import React from 'react'
-import { useAccount, useIsMounted} from '../../../hooks'
+import { useAccount, useIsMounted } from '../../../hooks'
 import { ConnectButton } from '../../atoms'
 import styles from './style.module.css'
 
-// TODO: Eliminate flash of unconnected content on loading
 export function WalletData() {
-  const mounted = useIsMounted()
-  const account = useAccount()
+  const { isLoading, onDisconnect, onConnect, account } = useAccount()
 
   return (
-    <>
-      {mounted && account ? (
+    <div className={styles.container}>
+      {account && (
         <div className={styles.displayData}>
           <div className={styles.card}>{account.displayName}</div>
         </div>
-      ) : (
-        <ConnectButton label="Connect Wallet" />
       )}
-    </>
+      {account ? (
+        <ConnectButton label="Disconnect" onClick={onDisconnect} />
+      ) : (
+        <ConnectButton
+          isLoading={isLoading}
+          label="Connect Wallet"
+          onClick={onConnect}
+        />
+      )}
+    </div>
   )
 }
