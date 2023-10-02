@@ -4,8 +4,7 @@ import { TransactionModal } from '../../molecules/transaction-modal'
 import { Utils } from '../../../shared/utils'
 import styles from './style.module.css'
 import { Spacer } from '../../atoms/spacer'
-import { deposit } from 'crowdfund-contract'
-import * as abundance from 'abundance-token'
+import { abundance, crowdfund } from '../../../shared/contracts'
 
 export interface IFormPledgeProps {
   account: string
@@ -25,17 +24,7 @@ export interface IResultSubmit {
 /**
  * Mint 100.0000000 tokens to the user's wallet for testing
  */
-function MintButton({
-  account,
-  symbol,
-  onComplete,
-  decimals,
-}: {
-  decimals: number
-  account: string
-  symbol: string
-  onComplete: () => void
-}) {
+function MintButton({ account, symbol, onComplete, decimals }: { decimals: number, account: string; symbol: string, onComplete: () => void }) {
   const [isSubmitting, setSubmitting] = useState(false)
 
   const displayAmount = 100
@@ -88,7 +77,7 @@ const FormPledge: FunctionComponent<IFormPledgeProps> = props => {
     setSubmitting(true)
 
     try {
-      await deposit({
+      await crowdfund.deposit({
         user: props.account,
         amount: BigInt(amount * 10 ** decimals),
       })
@@ -108,7 +97,7 @@ const FormPledge: FunctionComponent<IFormPledgeProps> = props => {
           error: e?.message || 'An error has occurred',
         })
       } else {
-        throw e
+        throw e;
       }
     } finally {
       setSubmitting(false)
@@ -174,9 +163,7 @@ const FormPledge: FunctionComponent<IFormPledgeProps> = props => {
           />
           <div className={styles.wrapper}>
             <div>
-              <h6>
-                Your balance: {Utils.formatAmount(balance, decimals)} {symbol}
-              </h6>
+              <h6>Your balance:  {Utils.formatAmount(balance, decimals)} {symbol}</h6>
             </div>
           </div>
         </div>
