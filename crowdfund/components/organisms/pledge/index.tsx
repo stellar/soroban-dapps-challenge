@@ -7,8 +7,10 @@ import {
   useAccount,
   useSubscription,
 } from '../../../hooks'
-import * as crowdfundContract from 'crowdfund-contract'
-import * as abundanceContract from 'abundance-token'
+import {
+  crowdfund as crowdfundContract,
+  abundance as abundanceContract,
+} from '../../../shared/contracts'
 
 import * as SorobanClient from 'soroban-client'
 import { Deposits, FormPledge } from '../../molecules'
@@ -16,7 +18,7 @@ let xdr = SorobanClient.xdr
 
 const Pledge: FunctionComponent = () => {
   const [updatedAt, setUpdatedAt] = React.useState<number>(Date.now())
-  const account = useAccount()
+  const { account, isLoading, onConnect } = useAccount()
 
   const [abundance, setAbundance] = React.useState<{
     balance: BigInt
@@ -32,11 +34,10 @@ const Pledge: FunctionComponent = () => {
 
   React.useEffect(() => {
     Promise.all([
-      abundanceContract.balance({ id: crowdfundContract.CONTRACT_ID }),
+      abundanceContract.balance({ id: crowdfundContract.options.contractId }),
       abundanceContract.decimals(),
       abundanceContract.name(),
       abundanceContract.symbol(),
-
       crowdfundContract.deadline(),
       crowdfundContract.target(),
     ]).then(fetched => {
@@ -46,7 +47,6 @@ const Pledge: FunctionComponent = () => {
         name: fetched[2].toString(),
         symbol: fetched[3].toString(),
       })
-
       setCrowdfund({
         deadline: new Date(Number(fetched[4]) * 1000),
         target: fetched[5],
@@ -56,14 +56,22 @@ const Pledge: FunctionComponent = () => {
 
   const [targetReached, setTargetReached] = useState<boolean>(false)
 
-  useSubscription(crowdfundContract, 'pledged_amount_changed', React.useMemo(() => event => {
-    let eventTokenBalance = xdr.ScVal.fromXDR(event.value.xdr, 'base64')
-    setAbundance({ ...abundance!, balance: SorobanClient.scValToNative(eventTokenBalance) })
-  }, [abundance]))
+  useSubscription(
+    crowdfundContract.options.contractId,
+    'pledged_amount_changed',
+    React.useMemo(() => event => {
+      let eventTokenBalance = xdr.ScVal.fromXDR(event.value.xdr, 'base64')
+      setAbundance({ ...abundance!, balance: SorobanClient.scValToNative(eventTokenBalance) })
+    }, [abundance])
+  )
 
-  useSubscription(crowdfundContract, 'target_reached', React.useMemo(() => () => {
-    setTargetReached(true)
-  }, []))
+  useSubscription(
+    crowdfundContract.options.contractId,
+    'target_reached',
+    React.useMemo(() => () => {
+      setTargetReached(true)
+    }, [])
+  )
 
   return (
     <Card>
@@ -71,19 +79,22 @@ const Pledge: FunctionComponent = () => {
         <Loading size={64} />
       ) : (
         <>
-          {targetReached && (
-            <h6>SUCCESSFUL CAMPAIGN !!</h6>
-          )}
+          {targetReached && <h6>SUCCESSFUL CAMPAIGN !!</h6>}
           <h6>PLEDGED</h6>
           <div className={styles.pledgeAmount}>
-            {Utils.formatAmount(abundance.balance, abundance.decimals)} {abundance.symbol}
+            {Utils.formatAmount(abundance.balance, abundance.decimals)}{' '}
+            {abundance.symbol}
           </div>
           <span className={styles.pledgeGoal}>{`of ${Utils.formatAmount(
             crowdfund.target,
             abundance.decimals
           )} ${abundance.symbol} goal`}</span>
           <ProgressBar
-            value={Utils.percentage(abundance.balance, crowdfund.target, abundance.decimals)}
+            value={Utils.percentage(
+              abundance.balance,
+              crowdfund.target,
+              abundance.decimals
+            )}
           />
           <div className={styles.wrapper}>
             <div>
@@ -108,7 +119,12 @@ const Pledge: FunctionComponent = () => {
                 onPledge={() => setUpdatedAt(Date.now())}
               />
             ) : (
-              <ConnectButton label="Connect wallet to pledge" isHigher={true} />
+              <ConnectButton
+                label="Connect wallet to pledge"
+                isHigher={true}
+                isLoading={isLoading}
+                onClick={onConnect}
+              />
             ))}
           {account && (
             <Deposits
@@ -116,7 +132,6 @@ const Pledge: FunctionComponent = () => {
               decimals={abundance.decimals || 7}
               name={abundance.name}
               symbol={abundance.symbol}
-              idCrowdfund={crowdfundContract.CONTRACT_ID}
             />
           )}
         </>
