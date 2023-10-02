@@ -5,7 +5,7 @@ pub trait Storage {
     fn get<V: TryFromVal<Env, Val>>(&self, env: &Env) -> Option<V>;
     fn set<V: IntoVal<Env, Val>>(&self, env: &Env, val: &V);
     fn has(&self, env: &Env) -> bool;
-    fn bump(&self, env: &Env, min_ledger_to_live: u32) -> &Self;
+    fn bump(&self, env: &Env, min_ledger_to_live: u32, max_ledger_to_live: u32) -> &Self;
     fn bump_until(&self, env: &Env, expiration_ledger: u32) -> &Self;
     fn remove(&self, env: &Env);
 }
@@ -21,15 +21,14 @@ impl Instance {
     pub fn has<K: IntoVal<Env, Val>>(env: &Env, key: &K) -> bool {
         env.storage().instance().has(key)
     }
-    pub fn bump(env: &Env, min_ledger_to_live: u32) {
-        env.storage().instance().bump(min_ledger_to_live)
+    pub fn bump(env: &Env, min_ledger_to_live: u32, max_ledger_to_live: u32) {
+        env.storage().instance().bump(min_ledger_to_live, max_ledger_to_live)
     }
     pub fn bump_until(env: &Env, expiration_ledger: u32) {
-        env.storage().instance().bump(
-            expiration_ledger
-                .checked_sub(env.ledger().sequence())
-                .unwrap(),
-        )
+        let live_for = expiration_ledger
+            .checked_sub(env.ledger().sequence())
+            .unwrap();
+        env.storage().instance().bump(live_for, live_for)
     }
     pub fn remove<K: IntoVal<Env, Val>>(env: &Env, key: &K) {
         env.storage().instance().remove(key);
@@ -47,16 +46,14 @@ impl Persistent {
     pub fn has<K: IntoVal<Env, Val>>(env: &Env, key: &K) -> bool {
         env.storage().persistent().has(key)
     }
-    pub fn bump<K: IntoVal<Env, Val>>(env: &Env, key: &K, min_ledger_to_live: u32) {
-        env.storage().persistent().bump(key, min_ledger_to_live)
+    pub fn bump<K: IntoVal<Env, Val>>(env: &Env, key: &K, min_ledger_to_live: u32, max_ledger_to_live: u32) {
+        env.storage().persistent().bump(key, min_ledger_to_live, max_ledger_to_live)
     }
     pub fn bump_until<K: IntoVal<Env, Val>>(env: &Env, key: &K, expiration_ledger: u32) {
-        env.storage().persistent().bump(
-            key,
-            expiration_ledger
-                .checked_sub(env.ledger().sequence())
-                .unwrap(),
-        )
+        let live_for = expiration_ledger
+            .checked_sub(env.ledger().sequence())
+            .unwrap();
+        env.storage().persistent().bump(key, live_for, live_for)
     }
     pub fn remove<K: IntoVal<Env, Val>>(env: &Env, key: &K) {
         env.storage().persistent().remove(key);
@@ -74,16 +71,14 @@ impl Temporary {
     pub fn has<K: IntoVal<Env, Val>>(env: &Env, key: &K) -> bool {
         env.storage().temporary().has(key)
     }
-    pub fn bump<K: IntoVal<Env, Val>>(env: &Env, key: &K, min_ledger_to_live: u32) {
-        env.storage().temporary().bump(key, min_ledger_to_live)
+    pub fn bump<K: IntoVal<Env, Val>>(env: &Env, key: &K, min_ledger_to_live: u32, max_ledger_to_live: u32) {
+        env.storage().temporary().bump(key, min_ledger_to_live, max_ledger_to_live)
     }
     pub fn bump_until<K: IntoVal<Env, Val>>(env: &Env, key: &K, expiration_ledger: u32) {
-        env.storage().temporary().bump(
-            key,
-            expiration_ledger
-                .checked_sub(env.ledger().sequence())
-                .unwrap(),
-        )
+        let live_for = expiration_ledger
+            .checked_sub(env.ledger().sequence())
+            .unwrap();
+        env.storage().temporary().bump(key, live_for, live_for)
     }
     pub fn remove<K: IntoVal<Env, Val>>(env: &Env, key: &K) {
         env.storage().temporary().remove(key);

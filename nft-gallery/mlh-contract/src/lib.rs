@@ -8,6 +8,7 @@ use storage::Storage;
 mod types;
 use crate::types::*;
 
+const MIN_BUMP: u32 = 600_000;
 const MAX_BUMP: u32 = 6_000_000;
 
 #[cfg(test)]
@@ -30,13 +31,13 @@ impl Million {
         let name = String::from_slice(&env, "Pixel");
         let sym = String::from_slice(&env, "PIX");
         MillionDataKey::TokenId
-            .bump(&env, MAX_BUMP)
+            .bump(&env, MIN_BUMP, MAX_BUMP)
             .set::<u32>(&env, &0);
         MillionDataKey::AssetAddress
-            .bump(&env, MAX_BUMP)
+            .bump(&env, MIN_BUMP, MAX_BUMP)
             .set::<Address>(&env, &asset);
         MillionDataKey::Price
-            .bump(&env, MAX_BUMP)
+            .bump(&env, MIN_BUMP, MAX_BUMP)
             .set::<i128>(&env, &price);
         erc721::ERC721Contract::initialize(env, admin, name, sym);
     }
@@ -85,14 +86,14 @@ impl Million {
         // Compute and store the next token id
         MillionDataKey::TokenId.set::<u32>(&env, &(token_id + 1));
         Coords::Token(x, y)
-            .bump(&env, MAX_BUMP)
+            .bump(&env, MIN_BUMP, MAX_BUMP)
             .set(&env, &token_id);
-        Coords::Xy(token_id).bump(&env, MAX_BUMP).set(&env, &(x, y));
+        Coords::Xy(token_id).bump(&env, MIN_BUMP, MAX_BUMP).set(&env, &(x, y));
 
         // Mint
         erc721::ERC721Contract::mint(env.clone(), to.clone(), token_id);
-        DataKey::Balance(to).bump(&env, MAX_BUMP);
-        DataKey::TokenOwner(token_id).bump(&env, MAX_BUMP);
+        DataKey::Balance(to).bump(&env, MIN_BUMP, MAX_BUMP);
+        DataKey::TokenOwner(token_id).bump(&env, MIN_BUMP, MAX_BUMP);
         Ok(token_id)
     }
 
@@ -173,7 +174,7 @@ impl Million {
 
     pub fn total_supply(env: Env) -> u32 {
         MillionDataKey::TokenId
-            .bump(&env, 1000)
+            .bump(&env, 1000, 10000)
             .get(&env)
             .unwrap_or(0)
     }
