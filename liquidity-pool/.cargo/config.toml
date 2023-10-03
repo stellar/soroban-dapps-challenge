@@ -1,2 +1,3 @@
 [alias] # command aliases
-install_soroban = "install --git https://github.com/AhaLabs/soroban-tools --rev b90af8bf9df5a68fd67e3c297e5744ffcd66c07c --root ./target soroban-cli --debug --features opt"
+install_soroban = "install --git https://github.com/AhaLabs/soroban-tools --rev c7fb7e08ba8efa9828d9df863d991558f269e35b --root ./target soroban-cli --debug  --features opt"
+b = "build --target wasm32-unknown-unknown --release"

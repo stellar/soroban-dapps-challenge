@@ -5,8 +5,8 @@ members = [
 ]
 
 [workspace.dependencies]
-soroban-sdk = { version = "0.9.2" }
-soroban-token-sdk = { version = "0.9.2" }
+soroban-sdk = "20.0.0-rc2"
+soroban-token-sdk = "20.0.0-rc2"
 
 [profile.release]
 opt-level = "z"
