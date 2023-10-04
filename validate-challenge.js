@@ -67,13 +67,13 @@ async function sendCompleteChallengeRequest(userId) {
   //todo: hide the link to the environment variables after testing phase (local and repository)
   var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
   console.log(`The complete challenge request is sending to the user=${userId}`);
-  await axios({
-    method: 'put',
-    url: challengeApiUrl,
-    data: {
-      userId: `${userId}:${crowdfundChallengeId}`,
-      isCompleted: true
-    }
-  });
+  // await axios({
+  //   method: 'put',
+  //   url: challengeApiUrl,
+  //   data: {
+  //     userId: `${userId}:${crowdfundChallengeId}`,
+  //     isCompleted: true
+  //   }
+  // });
   console.log("The request was sent!");
 }
