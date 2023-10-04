@@ -3,7 +3,7 @@ Soroban Crowdfunding Dapp Example
 
 # Soroban DApps Challenge
 
-Follow along at the official Soroban DApps challenge! Check it out [here](https://soroban.stellar.org/dapps/dapp-challenges/challenge-0-crowdfund).
+Follow along at the official Soroban Dapps Challenge! Check it out [here](https://soroban.stellar.org/dapps/dapp-challenges/challenge-0-crowdfund).
 
 # Original README
 
