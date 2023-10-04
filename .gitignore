@@ -1,3 +1,5 @@
 .vercel
 target
 */.soroban
+*/.next
+node_modules
