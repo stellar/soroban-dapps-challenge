@@ -5,7 +5,7 @@ import * as LiquidityPool from 'liquidity-pool-contract'
 import config from './config.json'
 const { network, rpcUrl } = config
 
-export { Address } from 'soroban-client'
+export { Address } from 'token-a-contract'
 
 export const tokenAContract = new TokenA.Contract({
     rpcUrl,

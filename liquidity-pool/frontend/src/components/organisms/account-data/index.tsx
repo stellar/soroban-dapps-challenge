@@ -8,7 +8,7 @@ import { IToken } from 'interfaces/soroban/token'
 
 import styles from './styles.module.scss'
 
-// import { tokenAContract, tokenBContract } from '../../../contracts'
+import { tokenAContract, tokenBContract, Address } from '../../../shared/contracts'
 
 interface IAccountData {
   account: string
@@ -72,7 +72,7 @@ const BalanceData: FunctionComponent<IBalanceData> = ({
           account={account}
           token={tokenA}
           balance={tokenA.balance || BigInt(0)}
-          // mint={tokenAContract.mint}
+          mint={tokenAContract.mint}
           icon={TokenAIcon}
           onUpdate={onUpdate}
         />
@@ -80,7 +80,7 @@ const BalanceData: FunctionComponent<IBalanceData> = ({
           account={account}
           token={tokenB}
           balance={tokenB.balance || BigInt(0)}
-          // mint={tokenBContract.mint}
+          mint={tokenBContract.mint}
 
           icon={TokenBIcon}
           onUpdate={onUpdate}

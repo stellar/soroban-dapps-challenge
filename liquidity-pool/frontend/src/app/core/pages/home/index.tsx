@@ -82,9 +82,9 @@ const Home = (): JSX.Element => {
     })
     if (account?.address) {
       Promise.all([
-        tokenAContract.balance({ id: account.address }),
-        tokenBContract.balance({ id: account.address }),
-        shareTokenContract.balance({ id: account.address }),
+        tokenAContract.balance({ id: new Address(account.address) }),
+        tokenBContract.balance({ id: new Address(account.address) }),
+        shareTokenContract.balance({ id: new Address(account.address) }),
       ]).then(fetched => {
         setTokenA(prevTokenA => ({
           ...prevTokenA,

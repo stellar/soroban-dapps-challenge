@@ -49,7 +49,7 @@ const Deposit: FunctionComponent<IDeposit> = ({ account, tokenA, tokenB, onUpdat
             const minB = (parseFloat(tokenBAmount) - parseFloat(maxSlippage) * parseFloat(tokenBAmount) / 100);
 
             await liquidityPoolContract.deposit({
-                to: (account),
+                to: new Address(account),
                 desired_a: BigInt(parseFloat(tokenAAmount) * 10 ** tokenA.decimals),
                 desired_b: BigInt(parseFloat(tokenBAmount) * 10 ** tokenB.decimals),
                 min_a: BigInt(minA * 10 ** tokenA.decimals),

@@ -60,7 +60,7 @@ const Withdraw: FunctionComponent<IWithdraw> = ({ account, tokenA, tokenB, share
         setError(false)
         try {
             await liquidityPoolContract.withdraw({
-                to: (account),
+                to: new Address(account),
                 share_amount: shareAmount,
                 min_a: tokenATotalWithSlippage,
                 min_b: tokenBTotalWithSlippage,
