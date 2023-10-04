@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { btc } from "../../shared/contracts";
+import { btc } from "@/shared/contracts";
 import {
   Badge,
   Box,

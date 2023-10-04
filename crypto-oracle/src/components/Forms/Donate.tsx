@@ -12,11 +12,11 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useAccount } from "@/hooks";
-import { donation } from "../../shared/contracts";
+import { donation } from "@/shared/contracts";
 import DepositForm from "@/components/Forms/DepositForm.tsx";
 import WithdrawForm from "@/components/Forms/WithdrawForm.tsx";
-import { oracle } from "../../shared/contracts";
-import { btc } from "../../shared/contracts";
+import { oracle } from "@/shared/contracts";
+import { btc } from "@/shared/contracts";
 import { EpochData, PairInfo } from "oracle-contract";
 
 
