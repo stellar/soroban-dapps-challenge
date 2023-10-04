@@ -22,7 +22,7 @@ const MintButton: FunctionComponent<IMintButton> = ({ account, decimals, mint, o
     <LoadingButton
       onClick={async (): Promise<void> => {
         setSubmitting(true)
-        await mint({ to: new Address(account), amount })
+        await mint({ to: (account), amount })
         setSubmitting(false)
         onUpdate()
       }}

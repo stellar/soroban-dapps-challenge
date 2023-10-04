@@ -24,4 +24,4 @@ yarn-error.log*
 
 .idea/
 
-frontend/src/shared/config.json
+src/shared/config.json
