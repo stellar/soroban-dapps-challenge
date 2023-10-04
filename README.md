@@ -8,6 +8,14 @@ The Soroban Dapps Challenge allows you to explore the potential of building Dapp
 
 In this challenge, you'll gain hands-on experience using Soroban's initial versions of the smart contracts environment, a Rust SDK, a CLI, and an RPC server. You'll learn how to write, test, and deploy smart contracts, and you'll get to see your code in action on our special test network, Futurenet.
 
+Each example dapp is stored in it's own branch. You can find the list of branches [here](https://github.com/stellar/soroban-dapps-challenge/branches). We recommend you start with the [first example](https://github.com/stellar/soroban-dapps-challenge/tree/crowdfund) and work your way through the list.
+
+To switch to a different branch, run the following command:
+
+```bash
+git checkout <branch-name>
+```
+
 ## What to Expect
 
 We've designed this course as a learning adventure for developers from the Stellar ecosystem and other blockchain communities to experiment, provide feedback, and contribute to the Soroban development process.
