@@ -85,7 +85,7 @@ ARGS="--network $NETWORK --source token-admin"
 
 
 echo "Building contracts"
-soroban contract build
+target/bin/soroban contract build
 echo "Optimizing contracts"
 soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
 soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
