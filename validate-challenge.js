@@ -1,7 +1,7 @@
 var fs = require('fs');
 var axios = require('axios');
 
-var nftGalleryChallengeId = 0;
+var nftGalleryChallengeId = 4;
 
 /**
  * Read the data from the output file and update 
