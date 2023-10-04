@@ -9,7 +9,7 @@ import { IReserves } from "interfaces/soroban/liquidityPool"
 import { Icon, IconNames, InputCurrency, InputPercentage, Tooltip } from "components/atoms"
 import { SwapIcon, TokenAIcon, TokenBIcon } from 'components/icons';
 import { ErrorText } from 'components/atoms/error-text';
-import { Address, liquidityPoolContract } from '../../../contracts'
+import { Address, liquidityPoolContract } from '../../../shared/contracts'
 
 interface IFormValues {
     buyAmount: string;
@@ -67,7 +67,7 @@ const Swap: FunctionComponent<ISwap> = ({ account, tokenA, tokenB, reserves, onU
 
         try {
             await liquidityPoolContract.swap({
-                to: new Address(account),
+                to: (account),
                 buy_a: swapTokens.buy.token == tokenA,
                 out: BigInt(parseFloat(formValues.buyAmount) * 10 ** swapTokens.buy.token.decimals),
                 in_max: BigInt(maxSold * 10 ** swapTokens.sell.token.decimals),

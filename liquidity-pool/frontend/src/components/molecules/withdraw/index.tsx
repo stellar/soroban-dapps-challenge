@@ -8,7 +8,7 @@ import { IReserves } from "interfaces/soroban/liquidityPool"
 import { Icon, IconNames, InputPercentage, InputSlider, Tooltip } from "components/atoms"
 import { Utils } from 'shared/utils';
 import { ErrorText } from 'components/atoms/error-text';
-import { Address, liquidityPoolContract } from '../../../contracts'
+import { Address, liquidityPoolContract } from '../../../shared/contracts'
 
 
 interface IFormValues {
@@ -60,7 +60,7 @@ const Withdraw: FunctionComponent<IWithdraw> = ({ account, tokenA, tokenB, share
         setError(false)
         try {
             await liquidityPoolContract.withdraw({
-                to: new Address(account),
+                to: (account),
                 share_amount: shareAmount,
                 min_a: tokenATotalWithSlippage,
                 min_b: tokenBTotalWithSlippage,

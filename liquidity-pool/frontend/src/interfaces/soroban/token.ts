@@ -1,4 +1,4 @@
-import { Address } from '../../contracts'
+import { Address } from '../../shared/contracts'
 
 interface IToken {
     symbol: string;
@@ -7,7 +7,7 @@ interface IToken {
 }
 
 interface IMintParams {
-    to: Address;
+    to: string;
     amount: bigint;
 }
 
