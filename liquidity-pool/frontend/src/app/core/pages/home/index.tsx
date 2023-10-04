@@ -17,7 +17,7 @@ import {
   tokenBContract,
   shareTokenContract,
   liquidityPoolContract,
-} from '../../../../contracts'
+} from '../../../../shared/contracts'
 import styles from './styles.module.scss'
 
 const Home = (): JSX.Element => {
@@ -82,9 +82,9 @@ const Home = (): JSX.Element => {
     })
     if (account?.address) {
       Promise.all([
-        tokenAContract.balance({ id: new Address(account.address) }),
-        tokenBContract.balance({ id: new Address(account.address) }),
-        shareTokenContract.balance({ id: new Address(account.address) }),
+        tokenAContract.balance({ id: account.address }),
+        tokenBContract.balance({ id: account.address }),
+        shareTokenContract.balance({ id: account.address }),
       ]).then(fetched => {
         setTokenA(prevTokenA => ({
           ...prevTokenA,

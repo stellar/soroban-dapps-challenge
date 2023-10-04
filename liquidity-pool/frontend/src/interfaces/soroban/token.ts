@@ -1,4 +1,4 @@
-import { Address } from '../../contracts'
+import { Address } from '../../shared/contracts'
 
 interface IToken {
     symbol: string;

@@ -4,7 +4,7 @@ import styles from './styles.module.scss'
 
 import { LoadingButton } from '@mui/lab';
 import { IMintFunction } from 'interfaces/soroban/token';
-import { Address } from '../../../contracts';
+import { Address } from '../../../shared/contracts';
 
 
 interface IMintButton {

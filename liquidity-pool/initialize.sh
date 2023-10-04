@@ -66,6 +66,8 @@ soroban config network add \
   --rpc-url "$SOROBAN_RPC_URL" \
   --network-passphrase "$SOROBAN_NETWORK_PASSPHRASE" "$NETWORK"
 
+echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" > ./frontend/src/shared/config.json
+
 if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
   soroban config identity generate token-admin
@@ -175,10 +177,10 @@ echo "Share ID: $SHARE_ID"
 
 
 echo "Generating bindings"
-soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
-soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
-soroban contract bindings typescript --network $NETWORK --contract-id $SHARE_ID --output-dir ".soroban/contracts/share-token" --overwrite
-soroban contract bindings typescript --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
+target/bin/soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
+target/bin/soroban contract bindings typescript --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
+target/bin/soroban contract bindings typescript --network $NETWORK --contract-id $SHARE_ID --output-dir ".soroban/contracts/share-token" --overwrite
+target/bin/soroban contract bindings typescript --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
 
 echo "Done"
 
