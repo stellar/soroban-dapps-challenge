@@ -16,8 +16,8 @@ jobs:
       - name: Install axios library
         run: npm install axios
 
-      - name: Validate crowdfund challenge
-        run: node crowdfund/validate-challenge.js
+      - name: Validate Crowdfund challenge
+        run: node validate-challenge.js
 
   close-pr:
     needs: challenge_check

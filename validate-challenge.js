@@ -7,7 +7,7 @@ var crowdfundChallengeId = 0;
  * Read the data from the output file and update 
  * the user progress on data validation. 
  */
-fs.readFile('./crowdfund/challenge/output.txt', async (err, inputData) => {
+fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
     var outputData = inputData.toString().split('\n');
     var user = outputData[0];
