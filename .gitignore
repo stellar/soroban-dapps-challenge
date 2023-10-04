@@ -1,5 +1,6 @@
 .vercel
 target
-*/.soroban
-*/.next
+.soroban
+.next
 node_modules
+frontend/src/shared/config.json
