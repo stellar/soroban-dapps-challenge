@@ -1,0 +1,39 @@
+name: "NFT-Gallery challenge validation"
+
+on: pull_request_target
+
+jobs:
+  challenge_check:
+    runs-on: ubuntu-latest
+    container: node
+
+    steps:
+      - name: Branch checkout to merge commit
+        uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+
+      - name: Install axios library
+        run: npm install axios
+
+      - name: Validate NFT-Gallery challenge
+        run: node validate-challenge.js
+
+  close-pr:
+    needs: challenge_check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install GH CLI
+        uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
+
+      - name: Checkout to branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.github_sha }}
+
+      - name: Close Pull
+        run: gh pr close ${{ github.event.pull_request.number }} 
+            --comment "Auto-closing PR on challenge verification completed."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
