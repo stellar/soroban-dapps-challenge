@@ -17,7 +17,7 @@ jobs:
         run: npm install axios
 
       - name: Validate Crypto-Oracle challenge
-        run: node validate-challenge.js
+        run: node validate-challenge.cjs
 
   close-pr:
     needs: challenge_check
