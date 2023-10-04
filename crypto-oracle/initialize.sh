@@ -13,6 +13,13 @@ if [[ -f "./.soroban-example-dapp/crowdfund_id" ]]; then
   exit 0
 fi
 
+if [[ -f "./target/bin/soroban" ]]; then
+  echo "Using soroban binary from ./target/bin"
+else
+  echo "Building pinned soroban binary"
+  cargo install_soroban
+fi
+
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
   if [[ "$NETWORK" == "futurenet" ]]; then
     SOROBAN_RPC_HOST="https://rpc-futurenet.stellar.org:443"
@@ -55,6 +62,7 @@ mkdir -p .soroban-example-dapp
 echo $NETWORK > ./.soroban-example-dapp/network
 echo $SOROBAN_RPC_URL > ./.soroban-example-dapp/rpc-url
 echo "$SOROBAN_NETWORK_PASSPHRASE" > ./.soroban-example-dapp/passphrase
+echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" > ./src/shared/config.json
 
 if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
@@ -122,7 +130,7 @@ soroban contract invoke \
   --id "$DONATION_ID" \
   -- \
   initialize \
-  --recipient GD2GSVJYPCK77KANTLPP22BX3MOZPLZFQJ7DDB4KCAKKCDVD3EET7SAU \
+  --recipient GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3 \
   --token "$BTC_TOKEN_ID" 
 echo "Done"
 
@@ -135,9 +143,9 @@ soroban contract invoke \
   --id "$ORACLE_ID" \
   -- \
   initialize \
-  --caller GD2GSVJYPCK77KANTLPP22BX3MOZPLZFQJ7DDB4KCAKKCDVD3EET7SAU \
+  --caller GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3 \
   --pair_name BTC_USDT \
   --epoch_interval 600 \
-  --relayer GC2BKLYOOYPDEFJKLKY6FNNRQMGFLVHJKQRGNSSRRGSMPGF32LHCQVGF
+  --relayer GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3
 echo "Done"
 

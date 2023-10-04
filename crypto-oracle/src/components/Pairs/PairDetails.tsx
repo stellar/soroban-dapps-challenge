@@ -1,12 +1,12 @@
 import { Stack } from "@chakra-ui/react";
 import PairCard, { ItemCardContainer } from "./PairCard.tsx";
-import * as contractOracleBtc from "oracle-contract";
+import { oracle } from "@/shared/contracts.ts";
 import OracleForm from "@/components/OracleForm.tsx";
 import { useEffect, useState } from "react";
 import { useAccount } from "@/hooks";
 import { EpochData, PairInfo } from "oracle-contract";
 
-const PairDetails = ({ contract }: { contract: typeof contractOracleBtc }) => {
+const PairDetails = ({ contract }: { contract: typeof oracle }) => {
   const account = useAccount();
   const [pairInfo, setPairInfo] = useState<(PairInfo & EpochData) | null>(null);
   const [isLoadingContractOwner, setIsLoadingContractOwner] =
