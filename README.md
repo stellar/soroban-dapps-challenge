@@ -1,24 +1,125 @@
-# Soroban Dapps Challenge
+# million lumen homepage
 
-Welcome to the [Soroban Dapps Challenge](https://soroban.stellar.org/dapps) repository! This dynamic course is designed for developers interested in building decentralized applications (Dapps) on the Soroban smart contracts platform. It is part challenge, part educational journey, and it aims to provide a practical and creative experience in blockchain development.
+Demo: [https://millionlumenhomepage.art](https://millionlumenhomepage.art)
 
-## About the Soroban Dapps Challenge
+## How to launch the dApp on standalone
 
-The Soroban Dapps Challenge allows you to explore the potential of building Dapps on the Soroban platform. While the course specifically focuses on Soroban, the knowledge you gain can be applied to other transaction processors such as different blockchains, L2s, and permissioned ledgers. The skills you acquire are meant to be transferable and versatile.
+### 1. Build the contract
 
-In this challenge, you'll gain hands-on experience using Soroban's initial versions of the smart contracts environment, a Rust SDK, a CLI, and an RPC server. You'll learn how to write, test, and deploy smart contracts, and you'll get to see your code in action on our special test network, Futurenet.
+Go to mlh-contract
 
-## What to Expect
+```
+cd ./mlh-contract
+```
 
-We've designed this course as a learning adventure for developers from the Stellar ecosystem and other blockchain communities to experiment, provide feedback, and contribute to the Soroban development process.
+Then run the build with `make`.
 
-As you progress through the challenge, anticipate your code to break and updates to shift things. We invite you to experiment and build but also remind you that changes are afoot as we prepare for the production release.
+> You will see that the Makefile build two contracts, the first one is to
+> initialize the contract, the second one is the actual contract without
+> the initialize() function. This allows to remove the only called once
+> function from the contract.
 
-## Giving Your Feedback
+This creates 2 wasm files in mlh-frontend/target
 
-We highly value your input and encourage you to share your feedback. Feel free to file issues in the Soroban repos or raise them in the [`soroban-help`](https://discord.com/channels/897514728459468821/1037073682599780494) channel in the Stellar Developer Discord.
+### 2. Launch the standalone network
 
-## Conclusion
+Go to mlh-contract and run the standalone.sh script.
 
-We're excited to have you on board and look forward to seeing the incredible Dapps you create during this challenge!
+### 3. Deploying the contracts
 
+For now on, we will move to the mlh-frontend folder.
+
+First, we need to configure the soroban cli, if you don't have it, you can install using `cargo install soroban-cli`.
+
+```
+soroban config network add standalone \
+    --rpc-url http://localhost:8000/soroban/rpc \
+    --network-passphrase "Standalone Network ; February 2017"
+```
+
+We also need an account to set everything up
+
+```
+soroban config identity generate admin
+```
+
+We need to fund this account
+
+```
+curl "http://localhost:8000/friendbot?addr=$(soroban config identity address admin)"
+```
+
+We need to wrap the asset we will use when minting the NFT. Here
+we will simply wrap the native asset, feel free to experiment with other
+custom assets.
+
+```
+soroban lab token wrap --asset native --network standalone --source admin
+```
+
+#### Deploy the init contract
+
+```
+soroban contract deploy --wasm ./target/milltion-init.wasm \
+    --source admin
+    --network standalone
+```
+
+This returns the $CONTRACT_ID.
+
+We can now invoke the initialize function:
+
+```
+soroban contract invoke --id $CONTRACT_ID --source admin \
+    --network standalone \
+    -- initialize \
+	--admin admin \
+	--asset $(soroban lab token id --asset native --network standalone) \
+	--price 2560000000
+```
+
+#### Install the actual contract
+
+```
+soroban contract install \
+    --wasm ./target/milltion-prod.wasm \
+    --source admin \
+    --network standalone
+```
+
+This will return a sha256 hash that is the $WASM_HASH we need
+to upgrade the contract.
+
+#### Upgrade the contract
+
+```
+soroban contract invoke --id $CONTRACT_ID \
+    --source admin \
+    --network standalone \
+    -- upgrade \
+    --wasm_hash $WASM_HASH
+```
+
+Now the contract is fully initialized and can be use.
+
+### 4. Launching the frontend
+
+```
+rm -r data                                # remove the data folder
+rm -r node_modules                        # delete the node_modules folder
+                                          # to remove previous contract id
+                                          # references
+
+npm i                                     # install all deps
+
+# generate the contract bindings
+soroban contract bindings typescript \
+    --wasm ./target/milltion-prod.wasm \
+	--network standalone \
+	--contract-id $CONTRACT_ID \
+	--contract-name Million \
+	--output-dir node_modules/Million
+
+mkdir data   # create the data folder
+npm run dev  # launch astro
+```

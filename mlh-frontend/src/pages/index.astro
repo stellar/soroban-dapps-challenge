@@ -1,0 +1,140 @@
+---
+import Layout from '../layouts/Layout.astro';
+// import * as million from 'Million';
+import Frame from '../components/Frame.astro';
+import Header from '../components/Header.astro';
+
+// console.log('CONTRACT_ID', million.CONTRACT_ID)
+// const FakeWallet = {
+//   isConnected: function()  { return false },
+// }
+// let total = await million.totalSupply({wallet: FakeWallet});
+
+const table = [];
+// for (let i = 0; i < total; i++) {
+//   try {
+//   let turi = await million.tokenUri({token_id: i}, {wallet: FakeWallet});
+//   let ru = await fetch(turi);
+//   let data = await ru.json();
+
+//     table.push({
+//       id: "0x" + i.toString(16).padStart(3, '0'),
+//       uri: data.home_page,
+//       owner: await million.ownerOf({token_id: i}, {wallet: FakeWallet}),
+//       image: data.image,
+//       coords: data.coords,
+
+//     })
+//   } catch {}
+// }
+---
+
+<Layout title="million lumen homepage">
+	<main>
+    <div class="page" id="page-1">
+      <div class="content">
+        <Header />
+        <Frame width="2048" height="512" />  
+      </div>  
+    </div>
+
+    <div class="page" id="page-2">
+      <div class="content">
+        <h1>The Pixels</h1>
+        <table>
+          <tr>
+            <th>Token Id</th>
+            <th>Coordinates</th>
+            <th>Owner</th>
+          </tr>
+          {
+            table.map((e) => (
+              <tr>
+                <td><img src={e.image} width="32px" height="32px" style="image-rendering: pixelated; border: 1px solid black; background-color: white;vertical-align: middle;margin: 4px;" /><a href={e.uri} >{e.id}</a></td>
+                <td>({e.coords[0]}, {e.coords[1]})</td>
+                <td><abbr title={e.owner}>{e.owner.substring(0,4) + "..." + e.owner.substring(52)}</abbr></td>
+              </tr>
+            ))
+          } 
+        </table>
+      </div>
+    </div>
+	</main>
+</Layout>
+
+<script>
+</script>
+
+<style>
+.page {
+
+   /* Page 100% height */
+   min-height: 100vh;
+
+   /* Limit width and center page (*) */
+   max-width: 100vw;
+   margin: 0 auto;
+
+   /* Align content vertically */
+   display: flex;
+   align-items: center;
+
+   /* Column background */
+   /*background: #fff;*/
+}
+
+.content {
+
+   /* Extend content width */
+   width: 100%;
+
+   padding-left: 2em;
+  padding-right: 2em;
+}
+
+#page-1 {
+  background-color: #cde;
+}
+#page-2 {
+  background-color: #f7f3b7;
+}
+#page-3 {
+  background-color: #cde;
+}
+table {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.5em;
+  margin-bottom: 2em;
+}
+td, th {
+  text-align: center;
+  //border: 1px solid black;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+	main {
+		color: black;
+		font-size: 20px;
+		line-height: 1.6;
+    margin-left: auto;
+    margin-right: auto;
+	}
+
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+	h2 {
+		font-size: 3rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+</style>
