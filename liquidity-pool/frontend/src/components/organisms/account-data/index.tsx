@@ -8,8 +8,7 @@ import { IToken } from 'interfaces/soroban/token'
 
 import {
   tokenAContract,
-  tokenBContract,
-  Address,
+  tokenBContract
 } from '../../../shared/contracts'
 import styles from './styles.module.scss'
 
