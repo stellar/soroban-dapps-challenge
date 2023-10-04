@@ -7,7 +7,7 @@ interface IToken {
 }
 
 interface IMintParams {
-    to: Address;
+    to: string;
     amount: bigint;
 }
 
