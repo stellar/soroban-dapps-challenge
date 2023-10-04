@@ -13,7 +13,7 @@ Each example dapp is stored in it's own branch. You can find the list of branche
 To switch to a different branch, run the following command:
 
 ```bash
-git checkout origin/<branch-name>
+git checkout <branch-name>
 ```
 
 ## What to Expect
