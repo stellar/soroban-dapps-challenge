@@ -105,7 +105,7 @@ const Home = (): JSX.Element => {
   return (
     <main>
       <header className={styles.header}>
-        <h3>Liquidity Pool DApp</h3>
+        <h3>Liquidity Pool Dapp</h3>
         <NetworkData
           network={network}
           account={account?.address || ''}

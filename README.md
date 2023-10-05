@@ -1,4 +1,4 @@
-Soroban Crowdfunding Dapp Example
+Soroban Liquidity Pool Dapp Example
 =================================
 
 # Soroban Dapps Challenge
