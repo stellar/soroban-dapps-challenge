@@ -58,8 +58,6 @@ async function validatePublicKey(publicKey) {
     for (const horizonUrl of stellarHorizonUrls) {
       const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`);
 
-      console.log(response);
-      console.log(response.status)
       if (response.status === 200) {
         return true;
       }
@@ -94,6 +92,9 @@ async function validateContract(contractId) {
         validContractId = true;
       }
     }
+    
+    console.log(`contract valid: ${validContractId}`)
+    console.log(correctLength && validContractId);
 
     return correctLength && validContractId;
   } catch (error) {
