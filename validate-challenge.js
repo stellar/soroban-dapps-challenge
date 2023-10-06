@@ -115,10 +115,8 @@ async function validateContractId(contractId) {
  * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
-  console.log(productionLink.startsWith("https"))
-  console.log(productionLink.includes("vercel.app"))
-  console.log(isLinkValid(productionLink))
-  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isLinkValid(productionLink)
+  const isLinkValid = isLinkValid(productionLink);
+  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isLinkValid;
 }
 
 /**
@@ -132,7 +130,7 @@ async function validateTvl(publicKey) {
   try {
     const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
     response.data.challanges.forEach(challenge => {
-      if (challenge.id === challengeId && challenge?.totalValueLocked > 0){
+      if (challenge.id === challengeId && challenge?.totalValueLocked > 0) {
         return true;
       }
     })
@@ -173,7 +171,7 @@ async function isLinkValid(link) {
     if (response.status === 200) {
       return true;
     } else {
-      console.log(`The link ${link} is not valid (Status Code: ${response.status}).`);
+      console.log(`The link ${link} is not valid: status code ${response.status}`);
       return false;
     }
   } catch (error) {
