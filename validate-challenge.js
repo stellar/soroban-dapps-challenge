@@ -115,7 +115,7 @@ async function validateContractId(contractId) {
  * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
-  const isLinkValid = isLinkValid(productionLink);
+  const isLinkValid = await isLinkValid(productionLink);
   return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isLinkValid;
 }
 
