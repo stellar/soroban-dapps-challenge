@@ -2,7 +2,7 @@ const fs = require('fs');
 const axios = require('axios');
 
 //TODO: Hide the link to the environment variables after testing phase (local and repository)
-const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
+const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev';
 const challengeId = 0;
 
 const stellarHorizonUrls = [
@@ -74,10 +74,10 @@ async function validatePublicKey(publicKey) {
       }
     }
 
-    console.log(`Stellar account ${publicKey} does not exist`);
+    console.log(`Public key ${publicKey} does not exist`);
     return false;
   } catch (error) {
-    console.error(`Error checking account existence: ${error.message}`);
+    console.error(`Error checking public key existence: ${error.message}`);
     return false;
   }
 }
@@ -128,7 +128,7 @@ async function validateProductionLink(productionLink) {
  */
 async function validateTvl(publicKey) {
   try {
-    const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
+    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
     for (const challenge of response.data.challenges || []) {
       if (challenge.id === challengeId && challenge.totalValueLocked && challenge.totalValueLocked > 0) {
         return true;
