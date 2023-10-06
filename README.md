@@ -61,7 +61,7 @@ soroban lab token wrap --asset native --network standalone --source admin
 
 ```
 soroban contract deploy --wasm ./target/milltion-init.wasm \
-    --source admin
+    --source admin \
     --network standalone
 ```
 
