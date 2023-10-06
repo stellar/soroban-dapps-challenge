@@ -30,9 +30,9 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   console.log(contractIdData);
   console.log(productionLinkData);
 
-  const publicKey = publicKeyData.split(":")[1].trim();
-  const contractId = contractIdData.split(":")[1].trim();
-  const productionLink = productionLinkData.split(":")[1].trim();
+  const publicKey = publicKeyData.split(": ")[1];
+  const contractId = contractIdData.split(": ")[1];
+  const productionLink = productionLinkData.split(": ")[1];
 
   const isPublicKeyValid = await validatePublicKey(publicKey);
   if (!isPublicKeyValid) {
