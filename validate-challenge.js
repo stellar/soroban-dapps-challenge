@@ -34,23 +34,23 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   const contractId = contractIdData.split(":")[1].trim();
   const productionLink = productionLinkData.split(":")[1].trim();
 
-  const publicKeyValid = await validatePublicKey(publicKey);
-  if (!publicKeyValid) {
+  const isPublicKeyValid = await validatePublicKey(publicKey);
+  if (!isPublicKeyValid) {
     throw new Error("Public key validation failed! Check the public key!");
   }
 
-  const contractIdValid = await validateContractId(contractId);
-  if (!contractIdValid) {
+  const isContractIdValid = await validateContractId(contractId);
+  if (!isContractIdValid) {
     throw new Error("Contract validation failed! Check the contract id!");
   }
 
-  const productionLinkValid = await validateProductionLink(productionLink);
-  if (!productionLinkValid) {
+  const isProductionLinkValid = await validateProductionLink(productionLink);
+  if (!isProductionLinkValid) {
     throw new Error("Production link validation failed! Check the production link!");
   }
 
-  const tvlValid = await validateTvl(publicKey);
-  if (!tvlValid) {
+  const isTvlValid = await validateTvl(publicKey);
+  if (!isTvlValid) {
     throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
   }
 
@@ -91,16 +91,16 @@ async function validatePublicKey(publicKey) {
  */
 async function validateContractId(contractId) {
   try {
-    let contractIdValid = false;
+    let isContractIdValid = false;
     for (const explorerUrl of stellarExplorerUrls) {
       const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
 
       if (response.status === 200) {
-        contractIdValid = true;
+        isContractIdValid = true;
       }
     }
 
-    return contractId.length === 56 && contractIdValid;
+    return contractId.length === 56 && isContractIdValid;
   } catch (error) {
     console.error(`Error validating contract ID: ${error.message}`);
     return false;
@@ -108,15 +108,15 @@ async function validateContractId(contractId) {
 }
 
 /**
- * Public url validation received from the challenge.
+ * Production link validation received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} productionLink The public link from the challenge's checkpoint.
- * @returns {boolean} True if the link passed the validation.
+ * @param {string} productionLink The production link from the challenge's checkpoint.
+ * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
-  for (i = 0; i < productionLink.length; i++) {
-    var curString = String(productionLink[i]);
+  for (let i = 0; i < productionLink.length; i++) {
+    const curString = String(productionLink[i]);
     if (curString.startsWith("https")) {
       return curString.includes("vercel.app") && isLinkValid(curString)
     }
@@ -147,7 +147,7 @@ async function validateTvl(publicKey) {
 }
 
 /**
- * Update the user progress: set the challenge is completed.
+ * Update the user progress. Mark the challenge as completed.
  *
  * @param {string} publicKey The user's public key (id).
  */
