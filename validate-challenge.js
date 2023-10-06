@@ -53,10 +53,10 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  * @param {string} publicKey The user public key
  * @returns {boolean} True if the public key passed the validation.
  */
-function validatePublicKey(publicKey) {
+async function validatePublicKey(publicKey) {
   try {
     for (const horizonUrl of stellarHorizonUrls) {
-      const response = axios.get(`${horizonUrl}/accounts/${publicKey}`);
+      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`);
 
       console.log(response);
       console.log(response.status)
@@ -80,7 +80,7 @@ function validatePublicKey(publicKey) {
  * @param {string} contractId The contract Id received from the challenge.
  * @returns {boolean} True if the contract Id passed the validation.
  */
-function validateContract(contractId) {
+async function validateContract(contractId) {
   try {
     var contractData = contractId.split(" ");
     var id = contractData[contractData.length - 1].trim();
@@ -88,7 +88,7 @@ function validateContract(contractId) {
 
     var validContractId = false;
     for (const explorerUrl of stellarExplorerUrls) {
-      const response = axios.get(`${explorerUrl}/contract/${publicKey}`);
+      const response = await axios.get(`${explorerUrl}/contract/${publicKey}`);
 
       if (response.status === 200) {
         validContractId = true;
@@ -127,9 +127,9 @@ function validateFinalLink(link) {
  * @param {string} userId The user's public key (id).
  * @returns {boolean} True if total value locked is greater than 0.
  */
-function validateTvl(userId) {
+async function validateTvl(userId) {
   try {
-    const response = axios.get(`${challengeApiUrl}users?userId=${userId}`);
+    const response = await axios.get(`${challengeApiUrl}users?userId=${userId}`);
     response.data.challanges.forEach(function(challenge) {
       if (challenge.id === challengeId && challenge?.totalValueLocked > 0){
         return true;
@@ -166,9 +166,9 @@ async function sendCompleteChallengeRequest(userId) {
  * @param {string} link The public link from the challenge's checkpoint.
  * @returns {boolean} True if the link exists and is valid.
  */
-function isLinkValid(link) {
+async function isLinkValid(link) {
   try {
-    const response = axios.head(link);
+    const response = await axios.head(link);
     if (response.status === 200) {
       return true;
     } else {
