@@ -129,9 +129,7 @@ async function validateProductionLink(productionLink) {
 async function validateTvl(publicKey) {
   try {
     const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
-    console.log(response.data)
-    response.data.challanges.forEach(challenge => {
-      console.log(challange)
+    response.data.challenges?.forEach(challenge => {
       if (challenge.id === challengeId && challenge?.totalValueLocked > 0) {
         return true;
       }
