@@ -45,7 +45,6 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   }
 
   const isProductionLinkValid = await validateProductionLink(productionLink);
-  console.log(isProductionLinkValid);
   if (!isProductionLinkValid) {
     throw new Error("Production link validation failed! Check the production link!");
   }
@@ -116,7 +115,8 @@ async function validateContractId(contractId) {
  * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
-  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isLinkValid(productionLink);
+  const isProductionLinkValid = await isLinkValid(productionLink);
+  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isProductionLinkValid;
 }
 
 /**
