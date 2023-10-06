@@ -131,6 +131,8 @@ async function validateTvl(publicKey) {
     const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
     response.data.challenges?.forEach(challenge => {
       console.log(challenge);
+      console.log(challenge.id === challengeId);
+      console.log(challenge?.totalValueLocked > 0);
       if (challenge.id === challengeId && challenge?.totalValueLocked > 0) {
         return true;
       }
