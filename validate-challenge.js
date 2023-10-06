@@ -1,20 +1,18 @@
-var fs = require('fs');
-var axios = require('axios');
+const fs = require('fs');
+const axios = require('axios');
 
-var challengeId = 0;
+//TODO: Hide the link to the environment variables after testing phase (local and repository)
+const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
+const challengeId = 0;
 
-var stellarHorizonUrls = [
+const stellarHorizonUrls = [
   "https://horizon-testnet.stellar.org",
   "https://horizon-futurenet.stellar.org"
 ]
-
-var stellarExplorerUrls = [
+const stellarExplorerUrls = [
   "https://testnet.steexp.com",
   "https://futurenet.steexp.com"
 ]
-
-//todo: hide the link to the environment variables after testing phase (local and repository)
-var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
 
 /**
  * Read the data from the output file and update
@@ -22,28 +20,41 @@ var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.
  */
 fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
-  var outputData = inputData.toString().split('\n');
-  var user = outputData[0];
-  var contract = outputData[1];
-  var link = outputData[2];
-  console.log(user);
-  console.log(contract);
-  console.log(link);
-  //todo: Discover if it is needed to check the user existence in the system by http GET request.
-  var userId = user.split(":")[1].trim();
-  if (!validatePublicKey(userId)) {
+
+  const outputData = inputData.toString().split('\n');
+  const publicKeyData = outputData[0];
+  const contractIdData = outputData[1];
+  const productionLinkData = outputData[2];
+
+  console.log(publicKeyData);
+  console.log(contractIdData);
+  console.log(productionLinkData);
+
+  const publicKey = publicKeyData.split(":")[1].trim();
+  const contractId = contractIdData.split(":")[1].trim();
+  const productionLink = productionLinkData.split(":")[1].trim();
+
+  const publicKeyValid = await validatePublicKey(publicKey);
+  if (!publicKeyValid) {
     throw new Error("Public key validation failed! Check the public key!");
   }
-  if (!validateContract(contract)) {
+
+  const contractIdValid = await validateContractId(contractId);
+  if (!contractIdValid) {
     throw new Error("Contract validation failed! Check the contract id!");
   }
-  if (!validateFinalLink(link)) {
-    throw new Error("Production link validation failed! Check the link address!");
+
+  const productionLinkValid = await validateProductionLink(productionLink);
+  if (!productionLinkValid) {
+    throw new Error("Production link validation failed! Check the production link!");
   }
-  if (!validateTvl(link)) {
+
+  const tvlValid = await validateTvl(publicKey);
+  if (!tvlValid) {
     throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
   }
-  await sendCompleteChallengeRequest(userId);
+
+  await sendCompleteChallengeRequest(publicKey);
 })
 
 /**
@@ -56,7 +67,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
 async function validatePublicKey(publicKey) {
   try {
     for (const horizonUrl of stellarHorizonUrls) {
-      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`);
+      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
 
       if (response.status === 200) {
         return true;
@@ -78,27 +89,20 @@ async function validatePublicKey(publicKey) {
  * @param {string} contractId The contract Id received from the challenge.
  * @returns {boolean} True if the contract Id passed the validation.
  */
-async function validateContract(contractId) {
+async function validateContractId(contractId) {
   try {
-    var contractData = contractId.split(" ");
-    var id = contractData[contractData.length - 1].trim();
-    var correctLength = id.length === 56;
-
-    var validContractId = false;
+    let contractIdValid = false;
     for (const explorerUrl of stellarExplorerUrls) {
-      const response = await axios.get(`${explorerUrl}/contract/${publicKey}`);
+      const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
 
       if (response.status === 200) {
-        validContractId = true;
+        contractIdValid = true;
       }
     }
-    
-    console.log(`contract valid: ${validContractId}`)
-    console.log(correctLength && validContractId);
 
-    return correctLength && validContractId;
+    return contractId.length === 56 && contractIdValid;
   } catch (error) {
-    console.error(`Error validating contract: ${error.message}`);
+    console.error(`Error validating contract ID: ${error.message}`);
     return false;
   }
 }
@@ -107,13 +111,12 @@ async function validateContract(contractId) {
  * Public url validation received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} link The public link from the challenge's checkpoint.
+ * @param {string} productionLink The public link from the challenge's checkpoint.
  * @returns {boolean} True if the link passed the validation.
  */
-function validateFinalLink(link) {
-  var linkData = link.split(" ");
-  for (i = 0; i < linkData.length; i++) {
-    var curString = String(linkData[i]);
+async function validateProductionLink(productionLink) {
+  for (i = 0; i < productionLink.length; i++) {
+    var curString = String(productionLink[i]);
     if (curString.startsWith("https")) {
       return curString.includes("vercel.app") && isLinkValid(curString)
     }
@@ -125,13 +128,13 @@ function validateFinalLink(link) {
  * Validate total value locked
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} userId The user's public key (id).
+ * @param {string} publicKey The user's public key (id).
  * @returns {boolean} True if total value locked is greater than 0.
  */
-async function validateTvl(userId) {
+async function validateTvl(publicKey) {
   try {
-    const response = await axios.get(`${challengeApiUrl}users?userId=${userId}`);
-    response.data.challanges.forEach(function(challenge) {
+    const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
+    response.data.challanges.forEach(challenge => {
       if (challenge.id === challengeId && challenge?.totalValueLocked > 0){
         return true;
       }
@@ -146,15 +149,15 @@ async function validateTvl(userId) {
 /**
  * Update the user Progress: set the challenge is completed.
  *
- * @param {string} userId The user's public key (id).
+ * @param {string} publicKey The user's public key (id).
  */
-async function sendCompleteChallengeRequest(userId) {
-  console.log(`The complete challenge request is sending to the user=${userId}`);
+async function sendCompleteChallengeRequest(publicKey) {
+  console.log(`The complete challenge request is sending to the user=${publicKey}`);
   await axios({
     method: 'put',
     url: challengeApiUrl,
     data: {
-      userId: `${userId}:${challengeId}`,
+      userId: `${publicKey}:${challengeId}`,
       isCompleted: true
     }
   });
@@ -164,7 +167,7 @@ async function sendCompleteChallengeRequest(userId) {
 /**
  * Check that link is valid and exists
  *
- * @param {string} link The public link from the challenge's checkpoint.
+ * @param {string} link The public link.
  * @returns {boolean} True if the link exists and is valid.
  */
 async function isLinkValid(link) {
