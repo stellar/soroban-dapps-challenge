@@ -129,14 +129,11 @@ async function validateProductionLink(productionLink) {
 async function validateTvl(publicKey) {
   try {
     const response = await axios.get(`${challengeApiUrl}users?userId=${publicKey}`);
-    response.data.challenges?.forEach(challenge => {
-      console.log(challenge);
-      console.log(challenge.id === challengeId);
-      console.log(challenge?.totalValueLocked > 0);
-      if (challenge.id === challengeId && challenge?.totalValueLocked > 0) {
+    for (const challenge of response.data.challenges || []) {
+      if (challenge.id === challengeId && challenge.totalValueLocked && challenge.totalValueLocked > 0) {
         return true;
       }
-    })
+    }
     return false;
   } catch (error) {
     console.error(`Error validating TVL: ${error.message}`);
