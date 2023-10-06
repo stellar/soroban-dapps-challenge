@@ -180,6 +180,8 @@ pub trait LiquidityPoolTrait {
     fn get_rsrvs(e: Env) -> (i128, i128);
 
     fn get_shares(e: Env) -> i128;
+
+    fn balance(e: Env) -> i128;
 }
 
 #[contract]
@@ -346,5 +348,12 @@ impl LiquidityPoolTrait for LiquidityPool {
 
     fn get_shares(e: Env) -> i128 {
         get_total_shares(&e)
+    }
+
+    fn balance(e: Env) -> i128 {
+        let balance_a = get_balance(&e, get_token_a(&e));
+        let balance_b = get_balance(&e, get_token_b(&e));
+
+        return balance_a + balance_b;
     }
 }
