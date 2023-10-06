@@ -58,6 +58,8 @@ function validatePublicKey(publicKey) {
     for (const horizonUrl of stellarHorizonUrls) {
       const response = axios.get(`${horizonUrl}/accounts/${publicKey}`);
 
+      console.log(response);
+      console.log(response.status)
       if (response.status === 200) {
         return true;
       }
