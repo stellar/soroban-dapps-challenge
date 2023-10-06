@@ -1,20 +1,18 @@
-var fs = require('fs');
-var axios = require('axios');
+const fs = require('fs');
+const axios = require('axios');
 
-var challengeId = 0;
+//TODO: Hide the link to the environment variables after testing phase (local and repository)
+const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev';
+const challengeId = 0;
 
-var stellarHorizonUrls = [
+const stellarHorizonUrls = [
   "https://horizon-testnet.stellar.org",
   "https://horizon-futurenet.stellar.org"
 ]
-
-var stellarExplorerUrls = [
+const stellarExplorerUrls = [
   "https://testnet.steexp.com",
   "https://futurenet.steexp.com"
 ]
-
-//todo: hide the link to the environment variables after testing phase (local and repository)
-var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev/';
 
 /**
  * Read the data from the output file and update
@@ -22,28 +20,41 @@ var challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.
  */
 fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
-  var outputData = inputData.toString().split('\n');
-  var user = outputData[0];
-  var contract = outputData[1];
-  var link = outputData[2];
-  console.log(user);
-  console.log(contract);
-  console.log(link);
-  //todo: Discover if it is needed to check the user existence in the system by http GET request.
-  var userId = user.split(":")[1].trim();
-  if (!validatePublicKey(userId)) {
+
+  const outputData = inputData.toString().split('\n');
+  const publicKeyData = outputData[0];
+  const contractIdData = outputData[1];
+  const productionLinkData = outputData[2];
+
+  console.log(publicKeyData);
+  console.log(contractIdData);
+  console.log(productionLinkData);
+
+  const publicKey = publicKeyData.split(": ")[1];
+  const contractId = contractIdData.split(": ")[1];
+  const productionLink = productionLinkData.split(": ")[1];
+
+  const isPublicKeyValid = await validatePublicKey(publicKey);
+  if (!isPublicKeyValid) {
     throw new Error("Public key validation failed! Check the public key!");
   }
-  if (!validateContract(contract)) {
+
+  const isContractIdValid = await validateContractId(contractId);
+  if (!isContractIdValid) {
     throw new Error("Contract validation failed! Check the contract id!");
   }
-  if (!validateFinalLink(link)) {
-    throw new Error("Production link validation failed! Check the link address!");
+
+  const isProductionLinkValid = await validateProductionLink(productionLink);
+  if (!isProductionLinkValid) {
+    throw new Error("Production link validation failed! Check the production link!");
   }
-  if (!validateTvl(link)) {
+
+  const isTvlValid = await validateTvl(publicKey);
+  if (!isTvlValid) {
     throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
   }
-  await sendCompleteChallengeRequest(userId);
+
+  await sendCompleteChallengeRequest(publicKey);
 })
 
 /**
@@ -53,86 +64,76 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  * @param {string} publicKey The user public key
  * @returns {boolean} True if the public key passed the validation.
  */
-function validatePublicKey(publicKey) {
+async function validatePublicKey(publicKey) {
   try {
     for (const horizonUrl of stellarHorizonUrls) {
-      const response = axios.get(`${horizonUrl}/accounts/${publicKey}`);
+      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
 
       if (response.status === 200) {
         return true;
       }
     }
 
-    console.log(`Stellar account ${publicKey} does not exist`);
+    console.log(`Public key ${publicKey} does not exist`);
     return false;
   } catch (error) {
-    console.error(`Error checking account existence: ${error.message}`);
+    console.error(`Error checking public key existence: ${error.message}`);
     return false;
   }
 }
 
 /**
- * Contract validation.
+ * Contract ID validation.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} contractId The contract Id received from the challenge.
- * @returns {boolean} True if the contract Id passed the validation.
+ * @param {string} contractId The contract id received from the challenge.
+ * @returns {boolean} True if the contract id passed the validation.
  */
-function validateContract(contractId) {
+async function validateContractId(contractId) {
   try {
-    var contractData = contractId.split(" ");
-    var id = contractData[contractData.length - 1].trim();
-    var correctLength = id.length === 56;
-
-    var validContractId = false;
+    let isContractIdValid = false;
     for (const explorerUrl of stellarExplorerUrls) {
-      const response = axios.get(`${explorerUrl}/contract/${publicKey}`);
+      const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
 
       if (response.status === 200) {
-        validContractId = true;
+        isContractIdValid = true;
       }
     }
 
-    return correctLength && validContractId;
+    return contractId.length === 56 && isContractIdValid;
   } catch (error) {
-    console.error(`Error validating contract: ${error.message}`);
+    console.error(`Error validating contract ID: ${error.message}`);
     return false;
   }
 }
 
 /**
- * Public url validation received from the challenge.
+ * Production link validation received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} link The public link from the challenge's checkpoint.
- * @returns {boolean} True if the link passed the validation.
+ * @param {string} productionLink The production link from the challenge's checkpoint.
+ * @returns {boolean} True if the production link passed the validation.
  */
-function validateFinalLink(link) {
-  var linkData = link.split(" ");
-  for (i = 0; i < linkData.length; i++) {
-    var curString = String(linkData[i]);
-    if (curString.startsWith("https")) {
-      return curString.includes("vercel.app") && isLinkValid(curString)
-    }
-  }
-  return false;
+async function validateProductionLink(productionLink) {
+  const isProductionLinkValid = await isLinkValid(productionLink);
+  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isProductionLinkValid;
 }
 
 /**
- * Validate total value locked
+ * Validate total value locked received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} userId The user's public key (id).
+ * @param {string} publicKey The user's public key (id).
  * @returns {boolean} True if total value locked is greater than 0.
  */
-function validateTvl(userId) {
+async function validateTvl(publicKey) {
   try {
-    const response = axios.get(`${challengeApiUrl}users?userId=${userId}`);
-    response.data.challanges.forEach(function(challenge) {
-      if (challenge.id === challengeId && challenge?.totalValueLocked > 0){
+    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
+    for (const challenge of response.data.challenges || []) {
+      if (challenge.id === challengeId && challenge.totalValueLocked && challenge.totalValueLocked > 0) {
         return true;
       }
-    })
+    }
     return false;
   } catch (error) {
     console.error(`Error validating TVL: ${error.message}`);
@@ -141,17 +142,17 @@ function validateTvl(userId) {
 }
 
 /**
- * Update the user Progress: set the challenge is completed.
+ * Update the user progress. Mark the challenge as completed.
  *
- * @param {string} userId The user's public key (id).
+ * @param {string} publicKey The user's public key (id).
  */
-async function sendCompleteChallengeRequest(userId) {
-  console.log(`The complete challenge request is sending to the user=${userId}`);
+async function sendCompleteChallengeRequest(publicKey) {
+  console.log(`The complete challenge request is sending to the user=${publicKey}`);
   await axios({
     method: 'put',
     url: challengeApiUrl,
     data: {
-      userId: `${userId}:${challengeId}`,
+      userId: `${publicKey}:${challengeId}`,
       isCompleted: true
     }
   });
@@ -161,16 +162,16 @@ async function sendCompleteChallengeRequest(userId) {
 /**
  * Check that link is valid and exists
  *
- * @param {string} link The public link from the challenge's checkpoint.
+ * @param {string} link The public link.
  * @returns {boolean} True if the link exists and is valid.
  */
-function isLinkValid(link) {
+async function isLinkValid(link) {
   try {
-    const response = axios.head(link);
+    const response = await axios.head(link);
     if (response.status === 200) {
       return true;
     } else {
-      console.log(`The link ${link} is not valid (Status Code: ${response.status}).`);
+      console.log(`The link ${link} is not valid: status code ${response.status}`);
       return false;
     }
   } catch (error) {
