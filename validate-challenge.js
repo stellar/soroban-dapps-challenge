@@ -83,11 +83,11 @@ async function validatePublicKey(publicKey) {
 }
 
 /**
- * Contract validation.
+ * Contract ID validation.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} contractId The contract Id received from the challenge.
- * @returns {boolean} True if the contract Id passed the validation.
+ * @param {string} contractId The contract id received from the challenge.
+ * @returns {boolean} True if the contract id passed the validation.
  */
 async function validateContractId(contractId) {
   try {
@@ -125,7 +125,7 @@ async function validateProductionLink(productionLink) {
 }
 
 /**
- * Validate total value locked
+ * Validate total value locked received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
  * @param {string} publicKey The user's public key (id).
@@ -147,7 +147,7 @@ async function validateTvl(publicKey) {
 }
 
 /**
- * Update the user Progress: set the challenge is completed.
+ * Update the user progress: set the challenge is completed.
  *
  * @param {string} publicKey The user's public key (id).
  */
