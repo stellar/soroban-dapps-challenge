@@ -1,6 +1,3 @@
 node_modules/
-.soroban
-.soroban-example-dapp
-src/shared/config.json
-cron/*
 target
+*/.soroban
