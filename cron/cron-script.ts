@@ -116,7 +116,7 @@ const getPairPrice = async (pairName) => {
       }
     );
     const result = await response.json();
-    return parseInt(parseFloat(result?.price) * 10 ** 5);
+    return parseInt((parseFloat(result?.price) * 10 ** 5).toString());
   } catch (e) {
     console.error(e);
     throw new Error("[getPairPrice] ERROR");
@@ -125,7 +125,7 @@ const getPairPrice = async (pairName) => {
 
 const updatePairPrice = async (price) => {
   try {
-    account = await server.getAccount(sourcePublicKey);
+    let account = await server.getAccount(sourcePublicKey);
     const value = new SorobanClient.nativeToScVal(price, { type: "u32" });
     const caller = new SorobanClient.Address(account._accountId).toScVal();
     const operation = contract.call("set_epoch_data", caller, value);
@@ -206,7 +206,7 @@ const main = async () => {
       return;
     }
 
-    const priceData = await getPairPrice("BTCUSDT");
+    const priceData = await getPairPrice("BTCUSDC");
     console.log("fetched priceData ", priceData);
 
     const updatePairPriceResult = await updatePairPrice(priceData);
@@ -217,8 +217,9 @@ const main = async () => {
   }
 };
 
-cron.schedule("0 */5 * * * *", async () => {
-  console.log("Running a task every 5 min");
+cron.schedule("*/10 * * * * *", async () => {
+  console.log("Running a task every 10 seconds");
   console.log("Current Time: ", new Date());
   await main();
 });
+

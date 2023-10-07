@@ -144,7 +144,7 @@ soroban contract invoke \
   -- \
   initialize \
   --caller GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3 \
-  --pair_name BTC_USDT \
+  --pair_name BTCUSDC \
   --epoch_interval 600 \
   --relayer GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3
 echo "Done"

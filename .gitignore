@@ -1,3 +1,5 @@
 node_modules/
 target
-*/.soroban
+.soroban
+.soroban-example-dapp
+src/shared/config.json
