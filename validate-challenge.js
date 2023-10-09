@@ -22,12 +22,12 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
 
   const publicKeyData = inputData.toString();
-  const publicKey = publicKeyData.substring(publicKeyData.indexOf('-') + 1).trim();
+  const publicKey = publicKeyData.substring(publicKeyData.indexOf(':') + 1).trim();
 
   console.log(publicKeyData);
   console.log(publicKey);
 
-  const user = getUser(publicKey);
+  const user = await getUser(publicKey);
   console.log(user);
   if (!user) {
     throw new Error("User is not found! Check the public key!");
