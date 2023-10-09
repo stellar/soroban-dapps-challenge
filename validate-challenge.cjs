@@ -21,41 +21,71 @@ const stellarExplorerUrls = [
 fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
 
-  const outputData = inputData.toString().split('\n');
-  const publicKeyData = outputData[0];
-  const contractIdData = outputData[1];
-  const productionLinkData = outputData[2];
+  const publicKeyData = inputData.toString();
+  const publicKey = publicKeyData.substring(publicKeyData.indexOf(':') + 1).trim();
 
   console.log(publicKeyData);
-  console.log(contractIdData);
-  console.log(productionLinkData);
 
-  const publicKey = publicKeyData.split(": ")[1];
-  const contractId = contractIdData.split(": ")[1];
-  const productionLink = productionLinkData.split(": ")[1];
+  const user = await getUser(publicKey);
+  if (!user) {
+    throw new Error("User is not found! Check the public key!");
+  }
 
   const isPublicKeyValid = await validatePublicKey(publicKey);
   if (!isPublicKeyValid) {
     throw new Error("Public key validation failed! Check the public key!");
   }
 
-  const isContractIdValid = await validateContractId(contractId);
+  const challenge = getCurrentChallenge(user);
+  if (!challenge) {
+    throw new Error("Challenge with progress is not found!");
+  }
+
+  const isContractIdValid = await validateContractId(challenge.contractId);
   if (!isContractIdValid) {
     throw new Error("Contract validation failed! Check the contract id!");
   }
 
-  const isProductionLinkValid = await validateProductionLink(productionLink);
+  const isProductionLinkValid = await validateProductionLink(challenge.url);
   if (!isProductionLinkValid) {
     throw new Error("Production link validation failed! Check the production link!");
   }
 
-  const isTvlValid = await validateTvl(publicKey);
+  const isTvlValid = validateTvl(challenge.totalValueLocked);
   if (!isTvlValid) {
-    throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
+    throw new Error("Total value locked validation failed! Total value locked must be greater than 0!");
   }
 
   await sendCompleteChallengeRequest(publicKey);
 })
+
+/**
+ * Get user with challenges.
+ *
+ * @param {string} publicKey The user's public key (id).
+ * @returns {any} User with challenges.
+ */
+async function getUser(publicKey) {
+  try {
+    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
+    return response.data;
+  } catch (error) {
+    console.error(`An error occurred while retrieving user ${publicKey}: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Get current challenge with progress.
+ *
+ * @param {any} user User with challenges.
+ * @returns {any} Challenge with progress.
+ */
+function getCurrentChallenge(user) {
+  const challenges = user.challenges || [];
+  return challenges.find(challenge => challenge.id === challengeId) || null;
+}
+
 
 /**
  * Public key validation.
@@ -65,21 +95,17 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  * @returns {boolean} True if the public key passed the validation.
  */
 async function validatePublicKey(publicKey) {
-  try {
-    for (const horizonUrl of stellarHorizonUrls) {
-      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
-
-      if (response.status === 200) {
-        return true;
-      }
+  for (const horizonUrl of stellarHorizonUrls) {
+    try {
+      await axios.get(`${horizonUrl}/accounts/${publicKey}`);
+      return true;
+    } catch (error) {
+      console.error(`An error occurred while validating public key ${publicKey} on network ${horizonUrl}: ${error.message}`);
     }
-
-    console.log(`Public key ${publicKey} does not exist`);
-    return false;
-  } catch (error) {
-    console.error(`Error checking public key existence: ${error.message}`);
-    return false;
   }
+
+  console.log(`Public key ${publicKey} does not exist`);
+  return false;
 }
 
 /**
@@ -90,21 +116,24 @@ async function validatePublicKey(publicKey) {
  * @returns {boolean} True if the contract id passed the validation.
  */
 async function validateContractId(contractId) {
-  try {
-    let isContractIdValid = false;
-    for (const explorerUrl of stellarExplorerUrls) {
-      const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
-
-      if (response.status === 200) {
-        isContractIdValid = true;
-      }
-    }
-
-    return contractId.length === 56 && isContractIdValid;
-  } catch (error) {
-    console.error(`Error validating contract ID: ${error.message}`);
+  if (!contractId) {
     return false;
   }
+
+  let isContractIdValid = contractId.length === 56;
+
+  for (const explorerUrl of stellarExplorerUrls) {
+    try {
+      const response = await axios.get(`${explorerUrl}/contract/${contractId}?_data=routes%2Fcontract.%24contractId`);
+      if (response.data.contractDetails) {
+        return isContractIdValid;
+      }
+    } catch (error) {
+      console.error(`An error occurred while validating contract ID on Stellar Explorer ${explorerUrl}: ${error.message}`);
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -115,6 +144,10 @@ async function validateContractId(contractId) {
  * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
+  if (!productionLink) {
+    return false;
+  }
+
   const isProductionLinkValid = await isLinkValid(productionLink);
   return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isProductionLinkValid;
 }
@@ -123,22 +156,11 @@ async function validateProductionLink(productionLink) {
  * Validate total value locked received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} publicKey The user's public key (id).
+ * @param {string} totalValueLocked total value locked.
  * @returns {boolean} True if total value locked is greater than 0.
  */
-async function validateTvl(publicKey) {
-  try {
-    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
-    for (const challenge of response.data.challenges || []) {
-      if (challenge.id === challengeId && challenge.totalValueLocked && challenge.totalValueLocked > 0) {
-        return true;
-      }
-    }
-    return false;
-  } catch (error) {
-    console.error(`Error validating TVL: ${error.message}`);
-    return false;
-  }
+function validateTvl(totalValueLocked) {
+  return totalValueLocked && totalValueLocked > 0;
 }
 
 /**
@@ -167,15 +189,10 @@ async function sendCompleteChallengeRequest(publicKey) {
  */
 async function isLinkValid(link) {
   try {
-    const response = await axios.head(link);
-    if (response.status === 200) {
-      return true;
-    } else {
-      console.log(`The link ${link} is not valid: status code ${response.status}`);
-      return false;
-    }
+    await axios.head(link);
+    return true;
   } catch (error) {
-    console.error(`Error checking link ${link}: ${error.message}`);
+    console.error(`Error occurred while validating link ${link}: ${error.message}`);
     return false;
   }
 }
