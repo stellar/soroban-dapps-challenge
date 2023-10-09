@@ -46,7 +46,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
     throw new Error("Contract validation failed! Check the contract id!");
   }
 
-  const isProductionLinkValid = await validateProductionLink(challenge.productionLink);
+  const isProductionLinkValid = await validateProductionLink(challenge.url);
   if (!isProductionLinkValid) {
     throw new Error("Production link validation failed! Check the production link!");
   }
