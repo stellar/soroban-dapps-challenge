@@ -1,3 +1,3 @@
-Public Key:
-Contract ID:
-Production Link:
+Public Key: GBK3EWXHU2P7COXH6XCUTGAVTPN6VWFLEAUB6DUNEDFLX4SCQ5I5N4C2
+Contract ID: CDPZPE6YBU5SPXBZ5OKX5XDV442U7WN2ZHQCKR74ZKSIUISITEQMRJTL
+Production Link: https://soroban-react-payment.vercel.app/
