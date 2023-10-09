@@ -27,6 +27,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   console.log(publicKeyData);
 
   const user = await getUser(publicKey);
+  console.log(user);
   if (!user) {
     throw new Error("User is not found! Check the public key!");
   }
