@@ -6,12 +6,12 @@ const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martine
 const challengeId = 0;
 
 const stellarHorizonUrls = [
-  "https://horizon-testnet.stellar.org",
-  "https://horizon-futurenet.stellar.org"
+  "https://horizon-futurenet.stellar.org",
+  "https://horizon-testnet.stellar.org"
 ]
 const stellarExplorerUrls = [
-  "https://testnet.steexp.com",
-  "https://futurenet.steexp.com"
+  "https://futurenet.steexp.com",
+  "https://testnet.steexp.com"
 ]
 
 /**
