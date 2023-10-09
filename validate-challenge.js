@@ -69,7 +69,10 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  */
 async function getUser(publicKey) {
   try {
-    return await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`).data;
+    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
+    console.log(response.status);
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     console.error(`An error occurred while retrieving user ${publicKey}: ${error.message}`);
     return null;
