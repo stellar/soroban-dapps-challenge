@@ -37,7 +37,6 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   }
 
   const challenge = getCurrentChallenge(user);
-  console.log(challenge);
   if (!challenge) {
     throw new Error("Challenge with progress is not found!");
   }
