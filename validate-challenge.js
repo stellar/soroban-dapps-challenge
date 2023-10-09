@@ -127,7 +127,7 @@ async function validateContractId(contractId) {
   for (const explorerUrl of stellarExplorerUrls) {
     try {
       console.log(`validaing 1 ${explorerUrl}`)
-      await axios.get(`${explorerUrl}/contract/${contractId}`);
+      await axios.get(`${explorerUrl}/contract/${contractId}?_data=routes%2Fcontract.%24contractId`);
       console.log(`after`)
       return isContractIdValid;
     } catch (error) {
