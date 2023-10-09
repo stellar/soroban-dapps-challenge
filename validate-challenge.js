@@ -21,41 +21,76 @@ const stellarExplorerUrls = [
 fs.readFile('./challenge/output.txt', async (err, inputData) => {
   if (err) throw err;
 
-  const outputData = inputData.toString().split('\n');
-  const publicKeyData = outputData[0];
-  const contractIdData = outputData[1];
-  const productionLinkData = outputData[2];
+  const publicKeyData = inputData.toString();
+  const publicKey = publicKeyData.substring(publicKeyData.indexOf('-') + 1).trim();
 
   console.log(publicKeyData);
-  console.log(contractIdData);
-  console.log(productionLinkData);
 
-  const publicKey = publicKeyData.split(": ")[1];
-  const contractId = contractIdData.split(": ")[1];
-  const productionLink = productionLinkData.split(": ")[1];
+  const user = getUser(publicKey);
+  if (!user) {
+    throw new Error("User is not found! Check the public key!");
+  }
 
   const isPublicKeyValid = await validatePublicKey(publicKey);
   if (!isPublicKeyValid) {
     throw new Error("Public key validation failed! Check the public key!");
   }
 
-  const isContractIdValid = await validateContractId(contractId);
+  const challenge = getCurrentChallenge(user);
+  if (!user) {
+    throw new Error("Challenge with progress is not found!");
+  }
+
+  const isContractIdValid = await validateContractId(challenge.contractId);
   if (!isContractIdValid) {
     throw new Error("Contract validation failed! Check the contract id!");
   }
 
-  const isProductionLinkValid = await validateProductionLink(productionLink);
+  const isProductionLinkValid = await validateProductionLink(challenge.productionLink);
   if (!isProductionLinkValid) {
     throw new Error("Production link validation failed! Check the production link!");
   }
 
-  const isTvlValid = await validateTvl(publicKey);
+  const isTvlValid = validateTvl(challenge.totalValueLocked);
   if (!isTvlValid) {
     throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
   }
 
   await sendCompleteChallengeRequest(publicKey);
 })
+
+/**
+ * Get user with challenges.
+ *
+ * @param {string} publicKey The user's public key (id).
+ * @returns {Promise<any>} User with challenges.
+ */
+async function getUser(publicKey) {
+  try {
+    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      console.log(`The user ${publicKey} is not found`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error retrieving user ${publicKey}: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Get current challenge with progress.
+ *
+ * @param {any} user User with challenges.
+ * @returns {Promise<any>} Challenge with progress.
+ */
+function getCurrentChallenge(user) {
+  const challenges = user.challenges || [];
+  return challenges.find(challenge => challenge.id === challengeId) || null;
+}
+
 
 /**
  * Public key validation.
@@ -90,6 +125,10 @@ async function validatePublicKey(publicKey) {
  * @returns {boolean} True if the contract id passed the validation.
  */
 async function validateContractId(contractId) {
+  if (!contractId) {
+    return false;
+  }
+
   try {
     let isContractIdValid = false;
     for (const explorerUrl of stellarExplorerUrls) {
@@ -115,6 +154,10 @@ async function validateContractId(contractId) {
  * @returns {boolean} True if the production link passed the validation.
  */
 async function validateProductionLink(productionLink) {
+  if (!productionLink) {
+    return false;
+  }
+
   const isProductionLinkValid = await isLinkValid(productionLink);
   return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isProductionLinkValid;
 }
@@ -123,22 +166,15 @@ async function validateProductionLink(productionLink) {
  * Validate total value locked received from the challenge.
  * Sophisticated validation logic should be added during the project evolution.
  *
- * @param {string} publicKey The user's public key (id).
+ * @param {string} totalValueLocked total value locked.
  * @returns {boolean} True if total value locked is greater than 0.
  */
-async function validateTvl(publicKey) {
-  try {
-    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
-    for (const challenge of response.data.challenges || []) {
-      if (challenge.id === challengeId && challenge.totalValueLocked && challenge.totalValueLocked > 0) {
-        return true;
-      }
-    }
-    return false;
-  } catch (error) {
-    console.error(`Error validating TVL: ${error.message}`);
+function validateTvl(totalValueLocked) {
+  if (!totalValueLocked) {
     return false;
   }
+
+  return totalValueLocked > 0;
 }
 
 /**
