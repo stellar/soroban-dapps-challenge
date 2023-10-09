@@ -76,7 +76,7 @@ async function getUser(publicKey) {
       return null;
     }
   } catch (error) {
-    console.error(`Error retrieving user ${publicKey}: ${error.message}`);
+    console.error(`An error occurred while retrieving user ${publicKey}: ${error.message}`);
     return null;
   }
 }
@@ -101,21 +101,20 @@ function getCurrentChallenge(user) {
  * @returns {boolean} True if the public key passed the validation.
  */
 async function validatePublicKey(publicKey) {
-  try {
-    for (const horizonUrl of stellarHorizonUrls) {
+  for (const horizonUrl of stellarHorizonUrls) {
+    try {
       const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
 
       if (response.status === 200) {
         return true;
       }
+    } catch (error) {
+      console.error(`An error occurred while validating public key: ${error.message}`);
     }
-
-    console.log(`Public key ${publicKey} does not exist`);
-    return false;
-  } catch (error) {
-    console.error(`Error checking public key existence: ${error.message}`);
-    return false;
   }
+
+  console.log(`Public key ${publicKey} does not exist`);
+  return false;
 }
 
 /**
@@ -130,22 +129,23 @@ async function validateContractId(contractId) {
     return false;
   }
 
-  try {
-    let isContractIdValid = false;
+  for (const explorerUrl of stellarExplorerUrls) {
+    try {
+      let isContractIdValid = false;
 
-    for (const explorerUrl of stellarExplorerUrls) {
       const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
 
       if (response.status === 200) {
         isContractIdValid = true;
       }
-    }
 
-    return contractId.length === 56 && isContractIdValid;
-  } catch (error) {
-    console.error(`Error validating contract ID: ${error.message}`);
-    return false;
+      return contractId.length === 56 && isContractIdValid;
+    } catch (error) {
+      console.error(`An error occurred while validating contract ID: ${error.message}`);
+    }
   }
+
+  return false;
 }
 
 /**
@@ -213,7 +213,7 @@ async function isLinkValid(link) {
       return false;
     }
   } catch (error) {
-    console.error(`Error checking link ${link}: ${error.message}`);
+    console.error(`Error occurred while validating link ${link}: ${error.message}`);
     return false;
   }
 }
