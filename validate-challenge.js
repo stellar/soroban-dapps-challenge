@@ -101,21 +101,21 @@ function getCurrentChallenge(user) {
  * @returns {boolean} True if the public key passed the validation.
  */
 async function validatePublicKey(publicKey) {
-  for (const horizonUrl of stellarHorizonUrls) {
-    try {
-        const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
+  try {
+    for (const horizonUrl of stellarHorizonUrls) {
+      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
 
-        if (response.status === 200) {
-          return true;
-        }
-    } catch (error) {
-      console.error(`Error checking public key existence: ${error.message}`);
-      // return false;
+      if (response.status === 200) {
+        return true;
+      }
     }
-  }
 
-  console.log(`Public key ${publicKey} does not exist`);
-  return false;
+    console.log(`Public key ${publicKey} does not exist`);
+    return false;
+  } catch (error) {
+    console.error(`Error checking public key existence: ${error.message}`);
+    return false;
+  }
 }
 
 /**
