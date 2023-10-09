@@ -69,10 +69,10 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  */
 async function getUser(publicKey) {
   try {
-    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
-    console.log(response.status);
-    console.log(response.data);
-    return response.data;
+    return await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`).data;
+    // console.log(response.status);
+    // console.log(response.data);
+    // return response.data;
   } catch (error) {
     console.error(`An error occurred while retrieving user ${publicKey}: ${error.message}`);
     return null;
@@ -104,7 +104,7 @@ async function validatePublicKey(publicKey) {
       await axios.get(`${horizonUrl}/accounts/${publicKey}`)
       return true;
     } catch (error) {
-      console.error(`An error occurred while validating public key: ${error.message}`);
+      console.error(`An error occurred while validating public key ${publicKey} on network ${horizonUrl}: ${error.message}`);
     }
   }
 
@@ -131,7 +131,7 @@ async function validateContractId(contractId) {
       await axios.get(`${explorerUrl}/contract/${contractId}`);
       return isContractIdValid;
     } catch (error) {
-      console.error(`An error occurred while validating contract ID: ${error.message}`);
+      console.error(`An error occurred while validating contract ID on Stellar Explorer ${explorerUrl}: ${error.message}`);
     }
   }
 
