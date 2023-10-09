@@ -38,7 +38,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
 
   const challenge = getCurrentChallenge(user);
   console.log(challenge);
-  if (!user) {
+  if (!challenge) {
     throw new Error("Challenge with progress is not found!");
   }
 
@@ -64,7 +64,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  * Get user with challenges.
  *
  * @param {string} publicKey The user's public key (id).
- * @returns {Promise<any>} User with challenges.
+ * @returns {any} User with challenges.
  */
 async function getUser(publicKey) {
   try {
@@ -80,7 +80,7 @@ async function getUser(publicKey) {
  * Get current challenge with progress.
  *
  * @param {any} user User with challenges.
- * @returns {Promise<any>} Challenge with progress.
+ * @returns {any} Challenge with progress.
  */
 function getCurrentChallenge(user) {
   const challenges = user.challenges || [];
