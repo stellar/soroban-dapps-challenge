@@ -97,7 +97,7 @@ function getCurrentChallenge(user) {
 async function validatePublicKey(publicKey) {
   for (const horizonUrl of stellarHorizonUrls) {
     try {
-      await axios.get(`${horizonUrl}/accounts/${publicKey}`)
+      await axios.get(`${horizonUrl}/accounts/${publicKey}`);
       return true;
     } catch (error) {
       console.error(`An error occurred while validating public key ${publicKey} on network ${horizonUrl}: ${error.message}`);
