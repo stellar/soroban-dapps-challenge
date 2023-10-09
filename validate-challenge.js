@@ -68,13 +68,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
  */
 async function getUser(publicKey) {
   try {
-    const response = await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`);
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      console.log(`The user ${publicKey} is not found`);
-      return null;
-    }
+    return await axios.get(`${challengeApiUrl}/users?userId=${publicKey}`).data;
   } catch (error) {
     console.error(`An error occurred while retrieving user ${publicKey}: ${error.message}`);
     return null;
@@ -103,11 +97,8 @@ function getCurrentChallenge(user) {
 async function validatePublicKey(publicKey) {
   for (const horizonUrl of stellarHorizonUrls) {
     try {
-      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
-
-      if (response.status === 200) {
-        return true;
-      }
+      await axios.get(`${horizonUrl}/accounts/${publicKey}`)
+      return true;
     } catch (error) {
       console.error(`An error occurred while validating public key: ${error.message}`);
     }
@@ -129,17 +120,12 @@ async function validateContractId(contractId) {
     return false;
   }
 
+  let isContractIdValid = contractId.length === 56;
+
   for (const explorerUrl of stellarExplorerUrls) {
     try {
-      let isContractIdValid = false;
-
-      const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
-
-      if (response.status === 200) {
-        isContractIdValid = true;
-      }
-
-      return contractId.length === 56 && isContractIdValid;
+      await axios.get(`${explorerUrl}/contract/${contractId}`);
+      return isContractIdValid;
     } catch (error) {
       console.error(`An error occurred while validating contract ID: ${error.message}`);
     }
@@ -205,13 +191,8 @@ async function sendCompleteChallengeRequest(publicKey) {
  */
 async function isLinkValid(link) {
   try {
-    const response = await axios.head(link);
-    if (response.status === 200) {
-      return true;
-    } else {
-      console.log(`The link ${link} is not valid: status code ${response.status}`);
-      return false;
-    }
+    await axios.head(link);
+    return true;
   } catch (error) {
     console.error(`Error occurred while validating link ${link}: ${error.message}`);
     return false;
