@@ -25,8 +25,10 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   const publicKey = publicKeyData.substring(publicKeyData.indexOf('-') + 1).trim();
 
   console.log(publicKeyData);
+  console.log(publicKey);
 
   const user = getUser(publicKey);
+  console.log(user);
   if (!user) {
     throw new Error("User is not found! Check the public key!");
   }
