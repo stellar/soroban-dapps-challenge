@@ -6,12 +6,12 @@ const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martine
 const challengeId = 0;
 
 const stellarHorizonUrls = [
-  "https://horizon-futurenet.stellar.org",
-  "https://horizon-testnet.stellar.org"
+  "https://horizon-testnet.stellar.org",
+  "https://horizon-futurenet.stellar.org"
 ]
 const stellarExplorerUrls = [
-  "https://futurenet.steexp.com",
-  "https://testnet.steexp.com"
+  "https://testnet.steexp.com",
+  "https://futurenet.steexp.com"
 ]
 
 /**
@@ -53,7 +53,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
 
   const isTvlValid = validateTvl(challenge.totalValueLocked);
   if (!isTvlValid) {
-    throw new Error("Total value locked validation failed! Total value locked must be greater than 0");
+    throw new Error("Total value locked validation failed! Total value locked must be greater than 0!");
   }
 
   await sendCompleteChallengeRequest(publicKey);
@@ -97,7 +97,9 @@ function getCurrentChallenge(user) {
 async function validatePublicKey(publicKey) {
   for (const horizonUrl of stellarHorizonUrls) {
     try {
+      console.log(`validaing 1 ${horizonUrl}`)
       await axios.get(`${horizonUrl}/accounts/${publicKey}`)
+      console.log(`after`)
       return true;
     } catch (error) {
       console.error(`An error occurred while validating public key ${publicKey} on network ${horizonUrl}: ${error.message}`);
@@ -124,7 +126,9 @@ async function validateContractId(contractId) {
 
   for (const explorerUrl of stellarExplorerUrls) {
     try {
+      console.log(`validaing 1 ${explorerUrl}`)
       await axios.get(`${explorerUrl}/contract/${contractId}`);
+      console.log(`after`)
       return isContractIdValid;
     } catch (error) {
       console.error(`An error occurred while validating contract ID on Stellar Explorer ${explorerUrl}: ${error.message}`);
