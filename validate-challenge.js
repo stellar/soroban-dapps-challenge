@@ -25,10 +25,8 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   const publicKey = publicKeyData.substring(publicKeyData.indexOf(':') + 1).trim();
 
   console.log(publicKeyData);
-  console.log(publicKey);
 
   const user = await getUser(publicKey);
-  console.log(user);
   if (!user) {
     throw new Error("User is not found! Check the public key!");
   }
@@ -39,6 +37,7 @@ fs.readFile('./challenge/output.txt', async (err, inputData) => {
   }
 
   const challenge = getCurrentChallenge(user);
+  console.log(challenge);
   if (!user) {
     throw new Error("Challenge with progress is not found!");
   }
@@ -102,21 +101,21 @@ function getCurrentChallenge(user) {
  * @returns {boolean} True if the public key passed the validation.
  */
 async function validatePublicKey(publicKey) {
-  try {
-    for (const horizonUrl of stellarHorizonUrls) {
-      const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
+  for (const horizonUrl of stellarHorizonUrls) {
+    try {
+        const response = await axios.get(`${horizonUrl}/accounts/${publicKey}`)
 
-      if (response.status === 200) {
-        return true;
-      }
+        if (response.status === 200) {
+          return true;
+        }
+    } catch (error) {
+      console.error(`Error checking public key existence: ${error.message}`);
+      // return false;
     }
-
-    console.log(`Public key ${publicKey} does not exist`);
-    return false;
-  } catch (error) {
-    console.error(`Error checking public key existence: ${error.message}`);
-    return false;
   }
+
+  console.log(`Public key ${publicKey} does not exist`);
+  return false;
 }
 
 /**
@@ -133,6 +132,7 @@ async function validateContractId(contractId) {
 
   try {
     let isContractIdValid = false;
+
     for (const explorerUrl of stellarExplorerUrls) {
       const response = await axios.get(`${explorerUrl}/contract/${contractId}`);
 
