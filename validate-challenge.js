@@ -158,11 +158,7 @@ async function validateProductionLink(productionLink) {
  * @returns {boolean} True if total value locked is greater than 0.
  */
 function validateTvl(totalValueLocked) {
-  if (!totalValueLocked) {
-    return false;
-  }
-
-  return totalValueLocked > 0;
+  return totalValueLocked && totalValueLocked > 0;
 }
 
 /**
