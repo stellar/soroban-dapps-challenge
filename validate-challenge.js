@@ -97,9 +97,7 @@ function getCurrentChallenge(user) {
 async function validatePublicKey(publicKey) {
   for (const horizonUrl of stellarHorizonUrls) {
     try {
-      console.log(`validaing 1 ${horizonUrl}`)
       await axios.get(`${horizonUrl}/accounts/${publicKey}`)
-      console.log(`after`)
       return true;
     } catch (error) {
       console.error(`An error occurred while validating public key ${publicKey} on network ${horizonUrl}: ${error.message}`);
@@ -126,10 +124,7 @@ async function validateContractId(contractId) {
 
   for (const explorerUrl of stellarExplorerUrls) {
     try {
-      console.log(`validaing 2 ${explorerUrl}`)
       const response = await axios.get(`${explorerUrl}/contract/${contractId}?_data=routes%2Fcontract.%24contractId`);
-      console.log(`after`)
-      console.log(response.data)
       if (response.data.contractDetails) {
         return isContractIdValid;
       }
