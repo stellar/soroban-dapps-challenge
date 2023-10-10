@@ -2,7 +2,7 @@ const fs = require('fs');
 const axios = require('axios');
 
 //TODO: Hide the link to the environment variables after testing phase (local and repository)
-const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler.julian-martinez.workers.dev';
+const challengeApiUrl = 'https://soroban-dapps-challenge-wrangler-v2.julian-martinez.workers.dev';
 const challengeId = 0;
 
 const stellarHorizonUrls = [
