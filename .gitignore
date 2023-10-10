@@ -1,2 +1,6 @@
-/.soroban
-/target
+.soroban
+target
+.soroban-example-dapp
+node_modules
+.next
+shared/config.json
