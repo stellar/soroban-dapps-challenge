@@ -1,3 +1,1 @@
-Public Key: GBAFFSSIK2IRPTOGLLPATFXAQIE4XNNDNZS5V3RRUZ6E2DCH4QRRBIFZ
-contract Id: CCG2CAXDV7CKTWWDDLZICBZH7SKPCYAUPG7V2IVHJ7C2G5HO752XMVWX
-production: https://soroban-dapps-challenge-dwz3p9v8y-nicoles-projects-c78362ec.vercel.app
+Public Key: 
