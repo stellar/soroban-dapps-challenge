@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 const SorobanClient = require("soroban-client");
 const xdr = SorobanClient.xdr;
+const SorobanRpc = SorobanClient.SorobanRpc;
 
 const API_NINJA_KEY = "YOUR_API_KEY";
 
@@ -35,12 +36,10 @@ const getTimestamp = async () => {
       throw new Error("[ERROR] [getTimestamp]");
     }
 
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getTimestamp] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return scVal.u64();
+    // if (!resultSimulation.result!.retval.u64() || !resultSimulation.result!.retval.u64().length) {
+    //   throw new Error("[ERROR] [getTimestamp] transaction simulation ");
+    // }
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getTimestamp] ERROR");
@@ -59,16 +58,12 @@ const getPairInfo = async () => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (resultSimulation.error) {
-      throw new Error("[ERROR] [getPairInfo]");
+    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+      throw new Error(
+        `[ERROR] [getPairInfo]: ${JSON.stringify(resultSimulation)}`
+      );
     }
-
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getPairInfo] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return SorobanClient.scValToNative(scVal);
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getPairInfo] ERROR");
@@ -89,16 +84,11 @@ const getEpochData = async (epochNr) => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (resultSimulation.error) {
-      throw new Error("[ERROR] [getEpochData]");
+    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+      throw new Error(`[ERROR] [const getEpochData = async (epochNr) => {
+        ]: ${JSON.stringify(resultSimulation)}`);
     }
-
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getEpochData] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return SorobanClient.scValToNative(scVal);
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getEpochData] ERROR");
@@ -197,7 +187,7 @@ const main = async () => {
       console.log("lastEpochPrice ", lastEpochPrice);
     }
 
-    let deltaTimestamp = currentTimestamp - lastEpochTimestamp;
+    let deltaTimestamp = Number(currentTimestamp) - lastEpochTimestamp;
     console.log("deltaTimestamp ", deltaTimestamp);
     if (deltaTimestamp >= epochInterval) {
       console.log("Need to update the value");
@@ -206,20 +196,19 @@ const main = async () => {
       return;
     }
 
-    const priceData = await getPairPrice("BTCUSDC");
+    const priceData = await getPairPrice("BTCUSDT");
     console.log("fetched priceData ", priceData);
 
     const updatePairPriceResult = await updatePairPrice(priceData);
-    console.log("value setted !");
+    console.log("value set!");
   } catch (e) {
     console.log("ERROR");
     console.error(e);
   }
 };
 
-cron.schedule("*/10 * * * * *", async () => {
-  console.log("Running a task every 10 seconds");
+cron.schedule("* * * * *", async () => {
+  console.log("Running a task every minute");
   console.log("Current Time: ", new Date());
   await main();
 });
-
