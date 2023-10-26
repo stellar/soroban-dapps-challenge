@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as contractDonation from "donation-contract";
+import { donation } from "@/shared/contracts";
 import {
   Alert,
   AlertIcon,
@@ -37,7 +37,7 @@ function WithdrawForm({
       if (contractBalance > 0) {
         setIsLoadingWithdraw(true);
         try {
-          let txWithdraw = await contractDonation.withdraw(
+          let txWithdraw = await donation.withdraw(
             {
               caller: account!.address,
             },

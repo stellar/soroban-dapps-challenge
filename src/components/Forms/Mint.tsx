@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as contractBtcToken from "btc-token";
+import { btc } from "@/shared/contracts";
 import {
   Badge,
   Box,
@@ -47,7 +47,7 @@ function Mint() {
   const getMyBalance = async () => {
     try {
       setIsLoadingMyBalance(true);
-      let txBalance = await contractBtcToken.balance({
+      let txBalance = await btc.balance({
         id: account!.address,
       });
       setMyBalance(parseFloat(txBalance!.toString()) / 10 ** 10);
@@ -62,7 +62,7 @@ function Mint() {
     if (account) {
       setIsLoadingMint(true);
       try {
-        let txMint = await contractBtcToken.mint(
+        let txMint = await btc.mint(
           {
             amount: BigInt(parseFloat(formData!.amount) * 10 ** 10),
             to: account!.address,

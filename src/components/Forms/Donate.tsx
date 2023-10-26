@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as contractDonation from "donation-contract";
 import {
   Box,
   Flex,
@@ -13,11 +12,13 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useAccount } from "@/hooks";
+import { donation } from "@/shared/contracts";
 import DepositForm from "@/components/Forms/DepositForm.tsx";
 import WithdrawForm from "@/components/Forms/WithdrawForm.tsx";
-import * as contractOracleBtc from "oracle-contract";
+import { oracle } from "@/shared/contracts";
+import { btc } from "@/shared/contracts";
 import { EpochData, PairInfo } from "oracle-contract";
-import * as contractBtcToken from "btc-token";
+
 
 const Donate = () => {
   const account = useAccount();
@@ -36,8 +37,8 @@ const Donate = () => {
   const getPairInfo = async () => {
     setIsLoadingPairInfo(true);
     try {
-      let txPairInfo = await contractOracleBtc.getPairInfo();
-      let txPairDataAtEpoch = await contractOracleBtc.getPairDataAtEpoch({
+      let txPairInfo = await oracle.getPairInfo();
+      let txPairDataAtEpoch = await oracle.getPairDataAtEpoch({
         epoch_nr: txPairInfo?.last_epoch,
       });
       setPairInfo({ ...txPairInfo, ...txPairDataAtEpoch });
@@ -51,7 +52,7 @@ const Donate = () => {
   const getTotalDeposits = async () => {
     try {
       setIsLoadingDeposits(true);
-      let txTotalDeposits = await contractDonation.getTotalDeposits();
+      let txTotalDeposits = await donation.getTotalDeposits();
       setDeposits(parseFloat(txTotalDeposits?.toString()) / 10 ** 10);
       setIsLoadingDeposits(false);
     } catch (e) {
@@ -63,7 +64,7 @@ const Donate = () => {
   const getContractBalance = async () => {
     try {
       setIsLoadingDeposits(true);
-      let txContractBalance = await contractDonation.getContractBalance();
+      let txContractBalance = await donation.getContractBalance();
       setContractBalance(parseFloat(txContractBalance?.toString()) / 10 ** 10);
       setIsLoadingDeposits(false);
     } catch (e) {
@@ -75,7 +76,7 @@ const Donate = () => {
   const getRecipient = async () => {
     try {
       setIsLoadingRecipient(true);
-      let txRecipient = await contractDonation.recipient();
+      let txRecipient = await donation.recipient();
       setRecipient(txRecipient);
       setIsLoadingRecipient(false);
     } catch (e) {
@@ -87,7 +88,7 @@ const Donate = () => {
   const getMyBalance = async () => {
     try {
       setIsLoadingMyBalance(true);
-      let txBalance = await contractBtcToken.balance({
+      let txBalance = await btc.balance({
         id: account!.address,
       });
       setMyBalance(parseFloat(txBalance!.toString()) / 10 ** 10);
@@ -104,21 +105,21 @@ const Donate = () => {
   };
 
   useEffect(() => {
-    if (contractDonation) {
+    if (donation) {
       getData();
       getRecipient();
     }
-  }, [contractDonation]);
+  }, [donation]);
 
   useEffect(() => {
     if (account) getMyBalance();
   }, [account]);
 
   useEffect(() => {
-    if (contractOracleBtc) {
+    if (btc) {
       getPairInfo();
     }
-  }, [contractOracleBtc]);
+  }, [btc]);
 
   if (isLoadingPairInfo || isLoadingMyBalance)
     return (

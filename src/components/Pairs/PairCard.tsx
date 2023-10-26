@@ -12,7 +12,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-import * as contractOracleBtc from "oracle-contract";
+import { oracle } from "@/shared/contracts";
 import { EpochData, PairInfo } from "oracle-contract";
 import { useEffect, useState } from "react";
 import { formatDate, formatShortAddress } from "@/utils/utils.tsx";
@@ -22,7 +22,7 @@ export const ItemCardContainer = ({
   contract,
   callback,
 }: {
-  contract: typeof contractOracleBtc;
+  contract: typeof oracle;
   callback?: any;
 }) => {
   const [pairInfo, setPairInfo] = useState<(PairInfo & EpochData) | null>(null);
@@ -64,7 +64,7 @@ export default function PairCard({
   isLoadingPairInfo,
 }: {
   isLoadingPairInfo: boolean;
-  contract: typeof contractOracleBtc;
+  contract: typeof oracle;
   callback?: any;
   pairInfo: (PairInfo & EpochData) | null;
 }) {
@@ -163,6 +163,9 @@ export default function PairCard({
                   </Text>
                 </Flex>
               </Box>
+              <Text fontSize={"sm"} color={"gray.500"}>
+              Relayer Address:
+              </Text>
               <CopyButton
                 str={formatShortAddress(pairInfo!.relayer)}
                 value={pairInfo!.relayer}
@@ -175,7 +178,7 @@ export default function PairCard({
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                {pathname?.includes("home") && (
+                {/* {pathname?.includes("home") && (
                   <Button
                     flex={1}
                     fontSize={"sm"}
@@ -199,7 +202,7 @@ export default function PairCard({
                       Details
                     </Link>
                   </Button>
-                )}
+                )} */}
               </Stack>
             </Stack>
           </>

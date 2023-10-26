@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useAccount } from "@/hooks";
-import * as contractOracleBtc from "oracle-contract";
+import { oracle } from "@/shared/contracts";
 import { PairInfo } from "oracle-contract";
 
 type FormTypes = { relayer: string; time: string };
@@ -51,7 +51,7 @@ const OracleAddress = ({ pairInfo }: { pairInfo: PairInfo | null }) => {
     if (account) {
       setIsLoadingSetRelayer(true);
       try {
-        let txPairEpochInterval = await contractOracleBtc.updateRelayerAddress(
+        let txPairEpochInterval = await oracle.updateRelayerAddress(
           {
             caller: account!.address,
             new_relayer_address: formData?.relayer,
@@ -162,7 +162,7 @@ const OracleEpochInterval = ({ pairInfo }: { pairInfo: PairInfo | null }) => {
   const onSubmitEpochData = async (formData: FormTypes): Promise<void> => {
     setIsLoadingSetEpochData(true);
     try {
-      let txPairEpochInterval = await contractOracleBtc.updatePairEpochInterval(
+      let txPairEpochInterval = await oracle.updatePairEpochInterval(
         {
           caller: account!.address,
           epoch_interval: Number(formData!.time),

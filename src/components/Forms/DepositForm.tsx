@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as contractDonation from "donation-contract";
+import { donation } from "@/shared/contracts";
 import {
   Alert,
   AlertIcon,
@@ -68,7 +68,7 @@ const DepositForm = ({
       if (myBalance >= Number(calculateValue)) {
         setIsLoadingDeposit(true);
         try {
-          let txDeposit = await contractDonation.deposit(
+          let txDeposit = await donation.deposit(
             {
               amount: BigInt(Number(calculateValue) * 10 ** 10),
               user: account!.address,

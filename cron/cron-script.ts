@@ -1,6 +1,17 @@
 const cron = require("node-cron");
 const SorobanClient = require("soroban-client");
-const xdr = SorobanClient.xdr;
+const {
+  xdr,
+  Keypair,
+  Networks,
+  TransactionBuilder,
+  Contract,
+  Server,
+  nativeToScVal,
+  scValToNative,
+  Address,
+} = SorobanClient;
+const SorobanRpc = SorobanClient.SorobanRpc;
 
 const API_NINJA_KEY = "YOUR_API_KEY";
 
@@ -17,7 +28,7 @@ const server = new SorobanClient.Server(
 );
 
 const networkPassphrase = SorobanClient.Networks.FUTURENET;
-const fee = 100;
+const fee = "100";
 
 const getTimestamp = async () => {
   let account = await server.getAccount(sourcePublicKey);
@@ -31,16 +42,12 @@ const getTimestamp = async () => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (resultSimulation.error) {
-      throw new Error("[ERROR] [getTimestamp]");
+    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+      throw new Error(
+        `[ERROR] [getTimestamp]: ${JSON.stringify(resultSimulation)}`
+      );
     }
-
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getTimestamp] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return scVal.u64();
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getTimestamp] ERROR");
@@ -59,16 +66,12 @@ const getPairInfo = async () => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (resultSimulation.error) {
-      throw new Error("[ERROR] [getPairInfo]");
+    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+      throw new Error(
+        `[ERROR] [getPairInfo]: ${JSON.stringify(resultSimulation)}`
+      );
     }
-
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getPairInfo] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return SorobanClient.scValToNative(scVal);
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getPairInfo] ERROR");
@@ -78,7 +81,7 @@ const getPairInfo = async () => {
 const getEpochData = async (epochNr) => {
   let account = await server.getAccount(sourcePublicKey);
   try {
-    epochNr = new SorobanClient.nativeToScVal(epochNr, { type: "u32" });
+    epochNr = SorobanClient.nativeToScVal(epochNr, { type: "u32" });
 
     let transaction = new SorobanClient.TransactionBuilder(account, {
       fee,
@@ -89,16 +92,11 @@ const getEpochData = async (epochNr) => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (resultSimulation.error) {
-      throw new Error("[ERROR] [getEpochData]");
+    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+      throw new Error(`[ERROR] [const getEpochData = async (epochNr) => {
+        ]: ${JSON.stringify(resultSimulation)}`);
     }
-
-    if (!resultSimulation.results || !resultSimulation.results.length) {
-      throw new Error("[ERROR] [getEpochData] transaction simulation ");
-    }
-    const result = resultSimulation.results[0];
-    const scVal = xdr.ScVal.fromXDR(result.xdr, "base64");
-    return SorobanClient.scValToNative(scVal);
+    return SorobanClient.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getEpochData] ERROR");
@@ -116,7 +114,7 @@ const getPairPrice = async (pairName) => {
       }
     );
     const result = await response.json();
-    return parseInt(parseFloat(result?.price) * 10 ** 5);
+    return parseInt((parseFloat(result?.price) * 10 ** 5).toString());
   } catch (e) {
     console.error(e);
     throw new Error("[getPairPrice] ERROR");
@@ -125,10 +123,13 @@ const getPairPrice = async (pairName) => {
 
 const updatePairPrice = async (price) => {
   try {
-    account = await server.getAccount(sourcePublicKey);
-    const value = new SorobanClient.nativeToScVal(price, { type: "u32" });
-    const caller = new SorobanClient.Address(account._accountId).toScVal();
-    const operation = contract.call("set_epoch_data", caller, value);
+    let account = await server.getAccount(sourcePublicKey);
+    const value = SorobanClient.nativeToScVal(price, { type: "u32" });
+    const caller = new SorobanClient.Address(account.accountId()).toScVal();
+    // const caller = new SorobanClient.Address(sourcePublicKey).toScVal();
+    // const caller = new SorobanClient.Address(sourcePublicKey.accountId()).toScVal();
+
+    const operation = contract.call("set_epoch_data", ...[caller, value]);
     let transaction = new SorobanClient.TransactionBuilder(account, {
       fee,
       networkPassphrase,
@@ -143,37 +144,38 @@ const updatePairPrice = async (price) => {
     );
     transaction.sign(sourceKeypair);
     let response = await server.sendTransaction(transaction);
+    let resultSimulation = await server.simulateTransaction(transaction);
     console.log("[updatePairPrice] Transaction hash:", response.hash);
 
-    const hash = response.hash;
-    if (response.status === "ERROR") {
-      console.log("[updatePairPrice] ERROR STATUS");
-      throw new Error("[updatePairPrice] ERROR STATUS");
-    }
+    //   const hash = response.hash;
+    //   if (response.status === "ERROR") {
+    //     console.log("[updatePairPrice] ERROR STATUS");
+    //     throw new Error("[updatePairPrice] ERROR STATUS");
+    //   }
 
-    while (response.status === "PENDING" || response.status === "NOT_FOUND") {
-      response = await server.getTransaction(hash);
-      console.log("[updatePairPrice] response.status: ", response.status);
+    //   while (response.status === "PENDING" || response.status === "TRY_AGAIN_LATER") {
+    //     let response = await server.getTransaction(hash);
+    //     console.log("[updatePairPrice] response.status: ", response.status);
+    //     await new Promise((resolve) => setTimeout(resolve, 3000));
+    //   }
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-    }
+    //   if (SorobanRpc.isSimulationSuccess(resultSimulation)) {
+    //     console.log("[updatePairPrice] SUCCESS");
+    //     console.log("[updatePairPrice] Transaction status:", response.status);
 
-    if (response.status === "SUCCESS") {
-      console.log("[updatePairPrice] SUCCESS");
-      console.log("[updatePairPrice] Transaction status:", response.status);
+    //     let decodedResponse = resultSimulation.result.retval;
+    //     // decodedResponse = decodedResponse.v3().sorobanMeta()?.returnValue();
+    //     decodedResponse = SorobanClient.scValToNative(decodedResponse);
 
-      let decodedResponse = SorobanClient.xdr.TransactionMeta.fromXDR(
-        response.resultMetaXdr,
-        "base64"
-      );
-      decodedResponse = decodedResponse.v3().sorobanMeta()?.returnValue();
-      decodedResponse = SorobanClient.scValToNative(decodedResponse);
-
-      return decodedResponse;
-    } else {
-      console.log("[updatePairPrice] ERROR ");
-      throw new Error("[updatePairPrice] ERROR ");
-    }
+    //     return decodedResponse;
+    //   } else {
+    //     console.log("[updatePairPrice] ERROR ");
+    //     throw new Error("[updatePairPrice] ERROR ");
+    //   }
+    // } catch (e) {
+    //   console.error(e);
+    //   throw new Error("[updatePairPrice] ERROR");
+    // }
   } catch (e) {
     console.error(e);
     throw new Error("[updatePairPrice] ERROR");
@@ -197,7 +199,7 @@ const main = async () => {
       console.log("lastEpochPrice ", lastEpochPrice);
     }
 
-    let deltaTimestamp = currentTimestamp - lastEpochTimestamp;
+    let deltaTimestamp = Number(currentTimestamp) - lastEpochTimestamp;
     console.log("deltaTimestamp ", deltaTimestamp);
     if (deltaTimestamp >= epochInterval) {
       console.log("Need to update the value");
@@ -210,15 +212,15 @@ const main = async () => {
     console.log("fetched priceData ", priceData);
 
     const updatePairPriceResult = await updatePairPrice(priceData);
-    console.log("value setted !");
+    console.log("value set!");
   } catch (e) {
     console.log("ERROR");
     console.error(e);
   }
 };
 
-cron.schedule("0 */5 * * * *", async () => {
-  console.log("Running a task every 5 min");
+cron.schedule("* * * * *", async () => {
+  console.log("Running a task every minute");
   console.log("Current Time: ", new Date());
   await main();
 });
