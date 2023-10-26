@@ -163,6 +163,9 @@ export default function PairCard({
                   </Text>
                 </Flex>
               </Box>
+              <Text fontSize={"sm"} color={"gray.500"}>
+              Relayer Address:
+              </Text>
               <CopyButton
                 str={formatShortAddress(pairInfo!.relayer)}
                 value={pairInfo!.relayer}
