@@ -36,10 +36,12 @@ TBD
 
 ## Build, deploy & run the app frontend
 
-### 1. Clone this repository:
+### 1. Navigate to this repository:
 
 ```sh
-git clone https://github.com/snowstorm134/SorobanCryptoOracle.git
+git clone https://github.com/stellar/soroban-dapps-challenge.git
+cd soroban-dapps-challenge
+git checkout crypto-oracle
 ```
 
 ### 2. Setting up `initialize.sh` script
@@ -127,32 +129,6 @@ To run the CRON task, go to `cron` dir and run:
 npm install
 node cron-script.js
 ```
-
-### 5. Correction of errors in typescript binding files
-
-The `npm run setup` command from the previous steps also executed a script that creates typescript binding files for the smart contract.
-
-Soroban-tooling is still in development, and the team is working to improve generated bindings that may not fully integrate with some frontends at this time.
-
-In this project we will fix this by following these steps:
-
-- Go to: `.soroban/oracle-contract/dist/esm/`;
-- Open `index.js` file;
-- Find all `export async function` and in each of them replace this part:
-
-  ```js
-  parseResultXdr: (xdr) => {
-    THIS_ROW_NEEDS_TO_BE_REPLACED;
-  };
-  ```
-
-  with this one:
-
-  ```js
-  parseResultXdr: (xdr) => {
-    return scValStrToJs(xdr);
-  };
-  ```
 
 ### 7. Run
 
