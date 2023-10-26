@@ -5,12 +5,9 @@
   <p align="center"> Bitcoin Price Oracle on Soroban Stellar (Futurenet)</p>
     - Live app: https://soroban-bitcoin-oracle.netlify.app<br/>
     - Tutorial (article): https://dev.to/user1122/soroban-bitcoin-price-oracle-tutorial-3ldk<br/>
-    - Tutorial (video): <a href="https://www.youtube.com/watch?v=YEHb36HEUyc">Link</a>
+    - Tutorial (video): <a href="https://www.youtube.com/watch?v=YEHb36HEUyc">Link</a><br/>
+    - Inspired by: [This Sorobounty Submission](https://github.com/stellar/sorobounty-spectacular/discussions/29)
 </div>
-
-## Soroban Bitcoin Price Oracle
-
-TBD
 
 ## Built With
 
