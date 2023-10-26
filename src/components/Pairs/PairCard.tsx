@@ -175,7 +175,7 @@ export default function PairCard({
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                {pathname?.includes("home") && (
+                {/* {pathname?.includes("home") && (
                   <Button
                     flex={1}
                     fontSize={"sm"}
@@ -199,7 +199,7 @@ export default function PairCard({
                       Details
                     </Link>
                   </Button>
-                )}
+                )} */}
               </Stack>
             </Stack>
           </>
