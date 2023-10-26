@@ -9,7 +9,7 @@ interface GeneratedLibrary {
 
 interface GetEventsWithLatestLedger
   extends SorobanClient.SorobanRpc.GetEventsResponse {
-  latestLedger?: string;
+  latestLedger: string;
 }
 
 type PagingKey = string;
