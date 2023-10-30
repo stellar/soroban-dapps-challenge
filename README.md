@@ -135,4 +135,4 @@ npm run dev
 
 It will run the app frontend on port 3000 or other.
 
-### 8. Open the app and start use it.
+### 8. Open the app and start using it.
