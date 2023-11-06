@@ -38,7 +38,7 @@
 ```sh
 git clone https://github.com/stellar/soroban-dapps-challenge.git
 cd soroban-dapps-challenge
-git checkout crypto-oracle
+git checkout oracle
 ```
 
 ### 2. Setting up `initialize.sh` script
