@@ -71,7 +71,7 @@ function Mint() {
         );
 
         toast({
-          title: "Mint Successfully!",
+          title: "Mint Successful!",
           description: "",
           position: "bottom-right",
           status: "success",

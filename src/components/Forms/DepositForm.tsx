@@ -76,7 +76,7 @@ const DepositForm = ({
             { fee: 100, secondsToWait: 20, responseType: "full" }
           );
           toast({
-            title: "Deposit Successfully!",
+            title: "Deposit Successful!",
             description: "",
             position: "bottom-right",
             status: "success",
