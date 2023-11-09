@@ -13,12 +13,6 @@ if [[ -f "./.soroban-example-dapp/crowdfund_id" ]]; then
   exit 0
 fi
 
-if [[ -f "./target/bin/soroban" ]]; then
-  echo "Using soroban binary from ./target/bin"
-else
-  echo "Building pinned soroban binary"
-  cargo install_soroban
-fi
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
   if [[ "$NETWORK" == "futurenet" ]]; then

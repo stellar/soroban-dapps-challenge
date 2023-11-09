@@ -4,3 +4,4 @@ target
 .soroban-example-dapp
 src/shared/config.json
 .vercel
+dist
