@@ -36,6 +36,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@esbuild/darwin-arm64": "^0.19.5",
     "@storybook/addon-a11y": "~7.0.20",
     "@storybook/addon-actions": "~7.0.20",
     "@storybook/addon-docs": "~7.0.20",
