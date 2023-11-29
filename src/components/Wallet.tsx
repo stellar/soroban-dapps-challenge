@@ -26,7 +26,7 @@ const STORAGE_WALLET_KEY = "wallet";
 
 const allowedWallets = [
   WalletType.FREIGHTER,
- //  WalletType.ALBEDO,
+  // WalletType.ALBEDO,
   // WalletType.XBULL,
 ];
 
@@ -57,7 +57,7 @@ export const Wallet = () => {
       // Set selected wallet, network, and public key
       SWKKit.setWallet(type);
       const publicKey = await SWKKit.getPublicKey();
-      await SWKKit.setNetwork(WalletNetwork.FUTURENET);
+      SWKKit.setNetwork(WalletNetwork.FUTURENET);
 
       // Short timeout to prevent blick on loading address
       setTimeout(() => {
@@ -98,7 +98,6 @@ export const Wallet = () => {
       await SWKKit.openModal({
         allowedWallets,
         onWalletSelected: async (option: ISupportedWallet) => {
-          SWKKit.setWallet(option.type);
           await getWalletAddress(option.type);
         },
       });
