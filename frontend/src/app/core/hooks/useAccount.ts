@@ -35,9 +35,9 @@ const ERRORS = {
 const STORAGE_WALLET_KEY = 'wallet'
 
 const allowedWallets = [
-  WalletType.ALBEDO,
+  // WalletType.ALBEDO,
   WalletType.FREIGHTER,
-  WalletType.XBULL,
+  // WalletType.XBULL,
 ]
 
 type UseAccountType = {
