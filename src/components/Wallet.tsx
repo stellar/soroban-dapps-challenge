@@ -25,9 +25,9 @@ const ERRORS = {
 const STORAGE_WALLET_KEY = "wallet";
 
 const allowedWallets = [
-  WalletType.ALBEDO,
   WalletType.FREIGHTER,
-  WalletType.XBULL,
+ //  WalletType.ALBEDO,
+  // WalletType.XBULL,
 ];
 
 export const Wallet = () => {
