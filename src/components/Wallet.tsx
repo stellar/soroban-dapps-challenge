@@ -98,6 +98,7 @@ export const Wallet = () => {
       await SWKKit.openModal({
         allowedWallets,
         onWalletSelected: async (option: ISupportedWallet) => {
+          SWKKit.setWallet(option.type);
           await getWalletAddress(option.type);
         },
       });
