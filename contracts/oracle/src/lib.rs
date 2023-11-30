@@ -43,7 +43,7 @@ fn get_pair_info(e: &Env) -> PairInfo {
         .expect("Contract not initialized")
 }
 
-fn get_last_data_epoch(e: &Env) -> u32 {
+fn get_last_epoch_data(e: &Env) -> u32 {
     let pair_info = e
         .storage()
         .instance()
@@ -70,7 +70,7 @@ fn get_relayer(e: &Env) -> Address {
 
 fn get_pair_data_at_epoch(e: &Env, epoch_nr: &u32) -> EpochData {
     assert!(
-        epoch_nr > &0u32 && epoch_nr <= &get_last_data_epoch(&e.clone()),
+        epoch_nr > &0u32 && epoch_nr <= &get_last_epoch_data(&e.clone()),
         "Inexistent epoch"
     );
     e.storage()
@@ -155,7 +155,7 @@ impl OracleContract {
             "Only relayer can set new data"
         );
 
-        let mut last_epoch = Self::get_last_data_epoch(e.clone());
+        let mut last_epoch = Self::get_last_epoch_data(e.clone());
         last_epoch += 1u32;
 
         let mut pair_info = Self::get_pair_info(e.clone());
@@ -187,8 +187,8 @@ impl OracleContract {
         get_pair_info(&e)
     }
 
-    pub fn get_last_data_epoch(e: Env) -> u32 {
-        get_last_data_epoch(&e)
+    pub fn get_last_epoch_data(e: Env) -> u32 {
+        get_last_epoch_data(&e)
     }
 
     pub fn get_pair_data_at_epoch(e: Env, epoch_nr: u32) -> EpochData {
