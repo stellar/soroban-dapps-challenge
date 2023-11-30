@@ -96,8 +96,8 @@ impl CollectDonations {
 
     pub fn withdraw(e: Env, caller: Address) {
         caller.require_auth();
-
         let recipient = get_recipient(&e);
+        assert!(caller == recipient, "only recipient may withdraw");
         let token = get_token(&e);
         transfer(&e, &recipient, &get_contract_balance(&e, &token));
     }
