@@ -28,7 +28,6 @@ pub struct EpochData {
 pub enum DataKey {
     Initialized,
     ContractOwner,
-
     PairInfo,
     EpochData(u32),
 }

@@ -70,9 +70,13 @@ curl --silent -X POST "$FRIENDBOT_URL?addr=$ADMIN_ADDRESS" >/dev/null
 
 ARGS="--network $NETWORK --source token-admin"
 
+# Compiles the smart contracts and stores WASM files in ./target/wasm32-unknown-unknown/release
 echo Build contracts
 make build
 
+# Deploys the contracts and stores the contract IDs in .soroban-example-dapp
+
+# The BTC Token contract is a Soroban token that represents BTC/USD
 echo Deploy the BTC TOKEN contract
 BTC_TOKEN_ID="$(
   soroban contract deploy $ARGS \
@@ -82,8 +86,7 @@ echo "Contract deployed succesfully with ID: $BTC_TOKEN_ID"
 echo -n "$BTC_TOKEN_ID" > .soroban-example-dapp/btc_token_id
 
 
-
-
+# The donation contract is a Soroban contract that allows users to donate to a specific address
 echo Deploy the DONATION contract
 DONATION_ID="$(
   soroban contract deploy $ARGS \
@@ -93,7 +96,7 @@ echo "Contract deployed succesfully with ID: $DONATION_ID"
 echo -n "$DONATION_ID" > .soroban-example-dapp/donation_id
 
 
-
+# The oracle contract is responsible for calculating the price of BTC/USD
 echo Deploy the ORACLE contract
 ORACLE_ID="$(
   soroban contract deploy $ARGS \
@@ -103,7 +106,7 @@ echo "Contract deployed succesfully with ID: $ORACLE_ID"
 echo "$ORACLE_ID" > .soroban-example-dapp/oracle_id
 
 
-
+# Initialize the contracts
 echo "Initialize the BTC TOKEN contract"
 soroban contract invoke \
   $ARGS \
@@ -117,7 +120,8 @@ soroban contract invoke \
 echo "Done"
   
   
-  
+# Recipient is the only account that can withdraw BTC from the donation contract
+# Cannot make donations
 echo "Initialize the DONATION contract"
 soroban contract invoke \
   $ARGS \
@@ -129,8 +133,7 @@ soroban contract invoke \
 echo "Done"
 
 
-
-
+# Relayer is the account that will be used to relay transactions to the oracle contract
 echo "Initialize the ORACLE contract"
 soroban contract invoke \
   $ARGS \
