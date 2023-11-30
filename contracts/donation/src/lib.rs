@@ -114,8 +114,8 @@ impl CollectDonations {
         get_contract_balance(&e, &get_token(&e))
     }
 
-    pub fn balance(e: Env) -> i128 {
-        get_contract_balance(&e, &get_token(&e))
+    pub fn balance(e: Env, user: Address) -> i128 {
+        get_user_deposited(&e, &user)
     }
 
     pub fn get_total_deposits(e: Env) -> i128 {
