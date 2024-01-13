@@ -1,3 +1,3 @@
-public key: 
-contract Id: 
-production: 
+public key: GCA5XHBQCIOVDLVPVAGONAATOKLP4DI7SR2UR4XMKCCPUBDJLKJQUYET
+contract Id: CDV5FB7OMBWO4EROKURKQNRNBM4QB2NGWQNCIU3WYQVELSTXJH46PKZR
+production: https://soroban-liquidity-pool.vercel.app/
