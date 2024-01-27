@@ -7,7 +7,8 @@ import { IToken } from "interfaces/soroban/token"
 import { InputCurrency, InputPercentage } from "components/atoms"
 import { TokenAIcon, TokenBIcon } from 'components/icons';
 import { ErrorText } from 'components/atoms/error-text';
-import { Address, liquidityPoolContract } from '../../../shared/contracts'
+import { Address } from 'token-a-contract';
+import { contractLiquidityPool } from 'shared/contracts';
 
 
 interface IFormValues {
@@ -17,7 +18,7 @@ interface IFormValues {
 }
 
 interface IDeposit {
-    account: string;
+    account: Address;
     tokenA: IToken;
     tokenB: IToken;
     onUpdate: () => void;
@@ -48,8 +49,8 @@ const Deposit: FunctionComponent<IDeposit> = ({ account, tokenA, tokenB, onUpdat
             const minA = (parseFloat(tokenAAmount) - parseFloat(maxSlippage) * parseFloat(tokenAAmount) / 100);
             const minB = (parseFloat(tokenBAmount) - parseFloat(maxSlippage) * parseFloat(tokenBAmount) / 100);
 
-            await liquidityPoolContract.deposit({
-                to: (account),
+            await contractLiquidityPool.deposit({
+                to: account,
                 desired_a: BigInt(parseFloat(tokenAAmount) * 10 ** tokenA.decimals),
                 desired_b: BigInt(parseFloat(tokenBAmount) * 10 ** tokenB.decimals),
                 min_a: BigInt(minA * 10 ** tokenA.decimals),

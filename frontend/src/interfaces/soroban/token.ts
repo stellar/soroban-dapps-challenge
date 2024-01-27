@@ -1,4 +1,4 @@
-import { Address } from '../../shared/contracts'
+import { Address } from 'token-a-contract';
 
 interface IToken {
     symbol: string;
@@ -7,17 +7,18 @@ interface IToken {
 }
 
 interface IMintParams {
-    to: string;
+    to: Address;
     amount: bigint;
 }
 
 interface IMintOptions {
+    signAndSend?: boolean;
     fee?: number;
 }
 
 
 interface IMintFunction {
-    (params: IMintParams, options?: IMintOptions): Promise<void>;
+    (params: IMintParams): Promise<void>;
 }
 
 
