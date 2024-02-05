@@ -33,7 +33,7 @@
     "token-a-contract": "file:../.soroban/contracts/token-a",
     "token-b-contract": "file:../.soroban/contracts/token-b",
     "liquidity-pool-contract": "file:../.soroban/contracts/liquidity-pool",
-    "share-token-contract": "file:../.soroban/contracts/share-token"
+    "share-token-contract": "file:../.soroban/contracts/share-token-contract"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "~7.0.20",

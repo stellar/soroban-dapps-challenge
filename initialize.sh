@@ -9,7 +9,7 @@ SOROBAN_RPC_HOST="$2"
 WASM_PATH="target/wasm32-unknown-unknown/release/"
 LIQUIDITY_POOL_WASM=$WASM_PATH"soroban_liquidity_pool_contract.optimized.wasm"
 ABUNDANCE_WASM=$WASM_PATH"abundance_token.optimized.wasm"
-TOKEN_WASM="contracts/liquidity-pool/token/soroban_token_contract.wasm"
+TOKEN_WASM=$WASM_PATH"abundance_token.wasm"
 
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
@@ -78,29 +78,29 @@ ARGS="--network $NETWORK --source token-admin"
 
 
 echo "Building contracts"
-soroban contract build
+./target/bin/soroban contract build
 echo "Optimizing contracts"
-soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
-soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
+./target/bin/soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
+./target/bin/soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
 
 
 echo Deploy the liquidity pool contract
 LIQUIDITY_POOL_ID="$(
-  soroban contract deploy $ARGS \
+  ./target/bin/soroban contract deploy $ARGS \
     --wasm $LIQUIDITY_POOL_WASM
 )"
 echo "Liquidity Pool contract deployed succesfully with ID: $LIQUIDITY_POOL_ID"
 
 echo Deploy the abundance token A contract
 ABUNDANCE_A_ID="$(
-  soroban contract deploy $ARGS \
+  ./target/bin/soroban contract deploy $ARGS \
     --wasm $ABUNDANCE_WASM
 )"
 echo "Contract deployed succesfully with ID: $ABUNDANCE_A_ID"
 
 echo Deploy the abundance token B contract
 ABUNDANCE_B_ID="$(
-  soroban contract deploy $ARGS \
+  ./target/bin/soroban contract deploy $ARGS \
     --wasm $ABUNDANCE_WASM
 )"
 echo "Contract deployed succesfully with ID: $ABUNDANCE_B_ID"
@@ -115,7 +115,7 @@ fi
 
 
 echo "Initialize the abundance token A contract"
-soroban contract invoke \
+./target/bin/soroban contract invoke \
   $ARGS \
   --id "$ABUNDANCE_A_ID" \
   -- \
@@ -127,7 +127,7 @@ soroban contract invoke \
 
 
 echo "Initialize the abundance token B contract"
-soroban contract invoke \
+./target/bin/soroban contract invoke \
   $ARGS \
   --id "$ABUNDANCE_B_ID" \
   -- \
@@ -139,16 +139,14 @@ soroban contract invoke \
 
 
 echo "Installing token wasm contract"
-TOKEN_WASM_HASH="$(soroban contract install \
+TOKEN_WASM_HASH="$(./target/bin/soroban contract install \
     $ARGS \
     --wasm $TOKEN_WASM
 )"
 
-
 echo "Initialize the liquidity pool contract"
-soroban contract invoke \
+./target/bin/soroban contract invoke \
   $ARGS \
-  --wasm $LIQUIDITY_POOL_WASM \
   --id "$LIQUIDITY_POOL_ID" \
   -- \
   initialize \
@@ -158,9 +156,8 @@ soroban contract invoke \
 
 
 echo "Getting the share id"
-SHARE_ID="$(soroban contract invoke \
+SHARE_ID="$(./target/bin/soroban contract invoke \
   $ARGS \
-  --wasm $LIQUIDITY_POOL_WASM \
   --id "$LIQUIDITY_POOL_ID" \
   -- \
   share_id
@@ -170,9 +167,10 @@ echo "Share ID: $SHARE_ID"
 
 
 echo "Generating bindings"
-soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
-soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
-soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
+./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
+./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
+./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/share-token-contract" --overwrite
+./target/bin/soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
 
 echo "Done"
 
