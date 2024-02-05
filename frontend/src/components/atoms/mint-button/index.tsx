@@ -24,9 +24,9 @@ const MintButton: FunctionComponent<IMintButton> = ({ account, decimals, tokenA,
       onClick={async () => {
         setSubmitting(true)
         if (tokenA) {
-          await contractTokenA.mint({ to: account, amount: amount })
+          await contractTokenA.mint({ to: String(account), amount: amount })
         } else {
-          await contractTokenB.mint({ to: account, amount: amount })
+          await contractTokenB.mint({ to: String(account), amount: amount })
         }
         setSubmitting(false)
         onUpdate()

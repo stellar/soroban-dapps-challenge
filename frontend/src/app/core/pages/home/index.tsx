@@ -16,6 +16,7 @@ import { Address } from 'token-a-contract'
 import { IToken } from 'interfaces/soroban/token';
 import { IReserves } from 'interfaces/soroban/liquidityPool';
 import { contractLiquidityPool, contractShareToken, contractTokenA, contractTokenB } from 'shared/contracts';
+import { AssembledTransaction } from 'liquidity-pool-contract';
 
 
 const Home = (): JSX.Element => {
@@ -31,12 +32,12 @@ const Home = (): JSX.Element => {
 
   React.useEffect(() => {
     Promise.all([
-      contractTokenA.symbol(),
-      contractTokenA.decimals(),
-      contractTokenB.symbol(),
-      contractTokenB.decimals(),
-      contractShareToken.symbol(),
-      contractShareToken.decimals()
+      String(contractTokenA.symbol()),
+      Number(contractTokenA.decimals()),
+      String(contractTokenB.symbol()),
+      Number(contractTokenB.decimals()),
+      String(contractShareToken.symbol()),
+      Number(contractShareToken.decimals())
     ]).then(fetched => {
       setTokenA(prevTokenA => ({
         ...prevTokenA,
@@ -60,18 +61,19 @@ const Home = (): JSX.Element => {
     Promise.all([
       contractLiquidityPool.getRsrvs(),
       contractLiquidityPool.getShares()
-    ]).then(fetched => {
+    ]).then((fetched: [AssembledTransaction<readonly [bigint, bigint]>, AssembledTransaction<bigint>]) => {
+      const [reservesA, reservesB] = fetched[0].result; // Access the result property
       setReserves({
-        reservesA: fetched[0][0],
-        reservesB: fetched[0][1],
+        reservesA,
+        reservesB,
       });
-      setTotalShares(fetched[1]);
+      setTotalShares(fetched[1].result); // Access the result property
     });
     if (account) {
       Promise.all([
-        contractTokenA.balance({ id: account }),
-        contractTokenB.balance({ id: account }),
-        contractShareToken.balance({ id: account })
+        contractTokenA.balance({ id: String(account) }),
+        contractTokenB.balance({ id: String(account) }),
+        contractShareToken.balance({ id: String(account) })
       ]).then(fetched => {
         setTokenA(prevTokenA => ({
           ...prevTokenA,

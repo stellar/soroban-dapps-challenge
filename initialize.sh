@@ -9,7 +9,7 @@ SOROBAN_RPC_HOST="$2"
 WASM_PATH="target/wasm32-unknown-unknown/release/"
 LIQUIDITY_POOL_WASM=$WASM_PATH"soroban_liquidity_pool_contract.optimized.wasm"
 ABUNDANCE_WASM=$WASM_PATH"abundance_token.optimized.wasm"
-TOKEN_WASM=$WASM_PATH"abundance_token.wasm"
+TOKEN_WASM=contracts/liquidity-pool/token/soroban_token_contract.wasm
 
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
