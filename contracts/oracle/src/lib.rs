@@ -2,8 +2,8 @@
 use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, String};
 
 pub(crate) const DAY_IN_LEDGERS: u32 = 17280;
-pub(crate) const BUMP_AMOUNT: u32 = 518400;
-pub(crate) const LIFETIME_THRESHOLD: u32 = BUMP_AMOUNT - DAY_IN_LEDGERS;
+pub(crate) const INSTANCE_BUMP_AMOUNT: u32 = 7 * DAY_IN_LEDGERS;
+pub(crate) const INSTANCE_LIFETIME_THRESHOLD: u32 = INSTANCE_BUMP_AMOUNT - DAY_IN_LEDGERS;
 
 #[derive(Clone, Debug)]
 #[contracttype]
@@ -112,7 +112,9 @@ impl OracleContract {
         e.storage().instance().set(&DataKey::ContractOwner, &caller);
         e.storage().instance().set(&DataKey::PairInfo, &pair_info);
         e.storage().instance().set(&DataKey::Initialized, &true);
-        e.storage().instance().bump(LIFETIME_THRESHOLD, BUMP_AMOUNT);
+        e.storage()
+            .instance()
+            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
     }
 
     pub fn update_pair_epoch_interval(e: Env, caller: Address, epoch_interval: u32) -> PairInfo {

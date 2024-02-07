@@ -43,7 +43,8 @@ pub fn write_allowance(
         let live_for = expiration_ledger
             .checked_sub(e.ledger().sequence())
             .unwrap();
-        e.storage().temporary().bump(&key, live_for, live_for)
+
+        e.storage().temporary().extend_ttl(&key, live_for, live_for)
     }
 }
 
