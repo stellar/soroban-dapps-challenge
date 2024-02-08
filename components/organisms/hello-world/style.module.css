@@ -1,0 +1,63 @@
+
+
+.label {
+  display: block; /* Ensure the label takes up its own line */
+  font-size: 16px; /* Larger font size for better readability */
+  color: #4a90e2; /* Use the theme's vibrant blue for consistency */
+  margin-bottom: 8px; /* Add some space below the label for clarity */
+  transition: color 0.3s ease; /* Smooth transition for color changes */
+}
+
+.label:hover {
+  color: #357abd; /* Slightly darker shade on hover for interactivity */
+}
+
+/* Style for input fields to complement the labels */
+.input {
+  width: 100%; /* Make the input field take up the full container width */
+  padding: 8px; /* Add some padding inside the input fields for better text alignment */
+  border-radius: 4px; /* Rounded corners for a modern look */
+  border: 1px solid #ccc; /* Subtle border */
+  font-size: 14px; /* Font size that complements the label */
+  margin-bottom: 16px; /* Space below the input field */
+}
+
+.input:focus {
+  border-color: #4a90e2; /* Highlight the input field with the theme color when focused */
+  outline: none; /* Remove the default focus outline */
+}
+
+.button {
+  background-color: #4a90e2; /* Vibrant blue background */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.button:hover {
+  background-color: #357abD; /* Darker shade on hover */
+}
+
+.preFormattedText {
+  background-color: #f4f4f4; /* Light gray background for contrast */
+  border-radius: 4px; /* Rounded corners */
+  padding: 8px; /* Padding for spacing inside the element */
+  border: 1px solid #e0e0e0; /* Subtle border */
+  overflow-x: auto; /* Enable horizontal scrolling for overflow content */
+  font-family: 'Courier New', Courier, monospace; /* Monospace font for code-like appearance */
+  color: #333; /* Dark text for readability */
+  font-size: 14px; /* Slightly smaller font size */
+  margin-top: 8px; /* Space above the element */
+  font-weight: 550
+}
+
+.strongText {
+  color: #242424; /* Vibrant blue matching the theme */
+  font-weight: 600; /* Slightly bolder for emphasis */
+  display: block; /* Block display to ensure it takes up its own line */
+  margin-top: 16px; /* Space above the strong text for separation */
+  margin-bottom: 4px; /* Space below the strong text before the content */
+}

@@ -1,0 +1,39 @@
+{
+  "name": "soroban-hello-world-dapp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "setup": "npm run clean && ./initialize.sh ${NETWORK:-testnet} && npm run build-contracts && npm install",
+    "clean": "rm -rf .next .soroban .soroban-example-dapp node_modules",
+    "reset": "npm run clean && npm run setup",
+    "build-contracts": "soroban contract bindings typescript --wasm ./target/wasm32-unknown-unknown/release/soroban_modified_hello_world_contract.wasm --id $(cat ./.soroban/hello_world_id) --output-dir ./.soroban/hello-world-contract --network \"$(cat ./.soroban-example-dapp/network)\" --overwrite"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "1.0.2",
+    "@stellar/freighter-api": "^1.5.1",
+    "axios": "^0.27.2",
+    "bigint-conversion": "^2.4.1",
+    "global": "^4.4.0",
+    "hello-world-contract": "file:.soroban/hello-world-contract",
+    "humanize-duration": "^3.27.3",
+    "moment": "^2.29.4",
+    "next": "^13.4.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stellar-sdk": "^11.2.1",
+    "vercel": "^33.4.1"
+  },
+  "devDependencies": {
+    "@types/humanize-duration": "^3.27.1",
+    "@types/node": "17.0.30",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "eslint": "^8.14.0",
+    "eslint-config-next": "^13.3.1",
+    "typescript": "5.1.3"
+  }
+}
