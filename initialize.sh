@@ -19,14 +19,13 @@ if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
     SOROBAN_RPC_HOST="https://soroban-testnet.stellar.org:443"
     SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"
   else
-     # assumes standalone on quickstart, which has the soroban/rpc path
+    # assumes standalone on quickstart, which has the soroban/rpc path
     SOROBAN_RPC_HOST="http://localhost:8000"
     SOROBAN_RPC_URL="$SOROBAN_RPC_HOST/soroban/rpc"
   fi
-else 
-  SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"  
+else
+  SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"
 fi
-
 
 case "$1" in
 standalone)
@@ -43,7 +42,7 @@ testnet)
   echo "Using Testnet network with RPC URL: $SOROBAN_RPC_URL"
   SOROBAN_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
   FRIENDBOT_URL="https://friendbot.stellar.org/"
-  ;;  
+  ;;
 *)
   echo "Usage: $0 standalone|futurenet|testnet [rpc-host]"
   exit 1
@@ -57,7 +56,7 @@ soroban config network add \
 
 if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
-  soroban config identity generate token-admin
+  soroban config identity generate token-admin --network testnet
 fi
 TOKEN_ADMIN_SECRET="$(soroban config identity show token-admin)"
 TOKEN_ADMIN_ADDRESS="$(soroban config identity address token-admin)"
@@ -83,8 +82,7 @@ BTC_TOKEN_ID="$(
     --wasm target/wasm32-unknown-unknown/release/btc_token.wasm
 )"
 echo "Contract deployed succesfully with ID: $BTC_TOKEN_ID"
-echo -n "$BTC_TOKEN_ID" > .soroban-example-dapp/btc_token_id
-
+echo -n "$BTC_TOKEN_ID" >.soroban-example-dapp/btc_token_id
 
 # The donation contract is a Soroban contract that allows users to donate to a specific address
 echo Deploy the DONATION contract
@@ -93,8 +91,7 @@ DONATION_ID="$(
     --wasm target/wasm32-unknown-unknown/release/donation_contract.wasm
 )"
 echo "Contract deployed succesfully with ID: $DONATION_ID"
-echo -n "$DONATION_ID" > .soroban-example-dapp/donation_id
-
+echo -n "$DONATION_ID" >.soroban-example-dapp/donation_id
 
 # The oracle contract is responsible for calculating the price of BTC/USD
 echo Deploy the ORACLE contract
@@ -103,8 +100,7 @@ ORACLE_ID="$(
     --wasm target/wasm32-unknown-unknown/release/soroban_oracle_contract.wasm
 )"
 echo "Contract deployed succesfully with ID: $ORACLE_ID"
-echo "$ORACLE_ID" > .soroban-example-dapp/oracle_id
-
+echo "$ORACLE_ID" >.soroban-example-dapp/oracle_id
 
 # Initialize the contracts
 echo "Initialize the BTC TOKEN contract"
@@ -118,8 +114,7 @@ soroban contract invoke \
   --name Bitcoin \
   --admin "$ADMIN_ADDRESS"
 echo "Done"
-  
-  
+
 # Recipient is the only account that can withdraw BTC from the donation contract
 # Cannot make donations
 echo "Initialize the DONATION contract"
@@ -129,9 +124,8 @@ soroban contract invoke \
   -- \
   initialize \
   --recipient GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3 \
-  --token "$BTC_TOKEN_ID" 
+  --token "$BTC_TOKEN_ID"
 echo "Done"
-
 
 # Relayer is the account that will be used to relay transactions to the oracle contract
 echo "Initialize the ORACLE contract"
@@ -145,4 +139,3 @@ soroban contract invoke \
   --epoch_interval 600 \
   --relayer GCSXUXZSA2VEXN5VGOWE5ODAJLC575JCMWRJ4FFRDWSTRCJYQK4ML6V3
 echo "Done"
-
