@@ -54,24 +54,33 @@ soroban config network add \
   --rpc-url "$SOROBAN_RPC_URL" \
   --network-passphrase "$SOROBAN_NETWORK_PASSPHRASE" "$NETWORK"
 
-if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
-  echo Create the token-admin identity
-  soroban config identity generate token-admin --network testnet
-fi
-TOKEN_ADMIN_SECRET="$(soroban config identity show token-admin)"
-TOKEN_ADMIN_ADDRESS="$(soroban config identity address token-admin)"
-
+echo Add $NETWORK to .soroban for use with npm scripts
 mkdir -p .soroban
+mkdir -p .soroban-example-dapp
+echo $NETWORK >./.soroban-example-dapp/network
+echo $SOROBAN_RPC_URL >./.soroban-example-dapp/rpc-url
+echo "$SOROBAN_NETWORK_PASSPHRASE" >./.soroban-example-dapp/passphrase
+echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" >./src/shared/config.json
+
+if !(soroban config identity ls | grep example-user 2>&1 >/dev/null); then
+  echo Create the example-user identity
+  soroban config identity generate example-user --network $NETWORK
+fi
+
+ADMIN_ADDRESS="$(soroban config identity address example-user)"
+echo $ADMIN_ADDRESS >./.soroban-example-dapp/address
+
+ADMIN_SECRET="$(soroban config identity show example-user)"
+echo $ADMIN_SECRET >./.soroban-example-dapp/secret
 
 # This will fail if the account already exists, but it'll still be fine.
-echo Fund token-admin account from friendbot
-soroban config identity fund $TOKEN_ADMIN_ADDRESS --network $NETWORK
+echo Fund example-user account from friendbot
+curl --silent -X POST "$FRIENDBOT_URL?addr=$EXAMPLE_USER_ADDRESS" >/dev/null
 
-ARGS="--network $NETWORK --source token-admin"
+ARGS="--network $NETWORK --source example-user"
 
-# Compiles the smart contracts and stores WASM files in ./target/wasm32-unknown-unknown/release
 echo Build contracts
-make build
+soroban contract build
 
 # Deploys the contracts and stores the contract IDs in .soroban-example-dapp
 

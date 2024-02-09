@@ -19,7 +19,6 @@ import { oracle } from "@/shared/contracts";
 import { btc } from "@/shared/contracts";
 import { EpochData, PairInfo } from "oracle-contract";
 
-
 const Donate = () => {
   const account = useAccount();
 
@@ -37,10 +36,12 @@ const Donate = () => {
   const getPairInfo = async () => {
     setIsLoadingPairInfo(true);
     try {
-      let txPairInfo = await oracle.getPairInfo();
-      let txPairDataAtEpoch = await oracle.getPairDataAtEpoch({
-        epoch_nr: txPairInfo?.last_epoch,
-      });
+      let txPairInfo = (await oracle.getPairInfo()).result;
+      let txPairDataAtEpoch = (
+        await oracle.getPairDataAtEpoch({
+          epoch_nr: txPairInfo?.last_epoch,
+        })
+      ).result;
       setPairInfo({ ...txPairInfo, ...txPairDataAtEpoch });
       setIsLoadingPairInfo(false);
     } catch (e) {

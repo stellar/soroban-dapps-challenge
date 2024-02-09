@@ -31,10 +31,12 @@ export const ItemCardContainer = ({
   const getPairInfo = async () => {
     setIsLoadingPairInfo(true);
     try {
-      let txPairInfo = await contract.getPairInfo();
-      let txPairDataAtEpoch = await contract.getPairDataAtEpoch({
-        epoch_nr: txPairInfo?.last_epoch,
-      });
+      let txPairInfo = (await contract.getPairInfo()).result;
+      let txPairDataAtEpoch = (
+        await contract.getPairDataAtEpoch({
+          epoch_nr: txPairInfo?.last_epoch,
+        })
+      ).result;
       setPairInfo({ ...txPairInfo, ...txPairDataAtEpoch });
       if (callback) callback({ ...txPairInfo, ...txPairDataAtEpoch });
       setIsLoadingPairInfo(false);
@@ -164,10 +166,10 @@ export default function PairCard({
                 </Flex>
               </Box>
               <Text fontSize={"sm"} color={"gray.500"}>
-              Relayer Address:
+                Relayer Address:
               </Text>
               <CopyButton
-                str={formatShortAddress(pairInfo!.relayer)}
+                str={String(formatShortAddress(pairInfo!.relayer))}
                 value={pairInfo!.relayer}
                 size={"md"}
               />

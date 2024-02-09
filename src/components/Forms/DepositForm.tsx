@@ -68,13 +68,15 @@ const DepositForm = ({
       if (myBalance >= Number(calculateValue)) {
         setIsLoadingDeposit(true);
         try {
-          let txDeposit = await donation.deposit(
-            {
-              amount: BigInt(Number(calculateValue) * 10 ** 10),
-              user: account!.address,
-            },
-            { fee: 100, secondsToWait: 20, responseType: "full" }
-          );
+          let txDeposit = await (
+            await donation.deposit(
+              {
+                amount: BigInt(Number(calculateValue) * 10 ** 10),
+                user: account!.address,
+              },
+              { fee: 100 }
+            )
+          ).signAndSend();
           toast({
             title: "Deposit Successful!",
             description: "",

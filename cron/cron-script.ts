@@ -22,10 +22,9 @@ const sourcePublicKey = sourceKeypair.publicKey();
 const contractId = "ADDRESS_OF_DEPLOYED_CONTRACT_ORACLE";
 const contract = new SorobanClient.Contract(contractId);
 
-const server = new SorobanClient.Server(
-  "https://rpc-futurenet.stellar.org:443",
-  { allowHttp: true }
-);
+const server = new SorobanClient.Server("https://soroban-testnet.stellar.org", {
+  allowHttp: true,
+});
 
 const networkPassphrase = SorobanClient.Networks.FUTURENET;
 const fee = "100";

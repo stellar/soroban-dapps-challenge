@@ -37,12 +37,14 @@ function WithdrawForm({
       if (contractBalance > 0) {
         setIsLoadingWithdraw(true);
         try {
-          let txWithdraw = await donation.withdraw(
-            {
-              caller: account!.address,
-            },
-            { fee: 100, secondsToWait: 20, responseType: "full" }
-          );
+          let txWithdraw = (
+            await donation.withdraw(
+              {
+                caller: account!.address,
+              },
+              { fee: 100 }
+            )
+          ).signAndSend();
 
           toast({
             title: "Withdraw Successfully!",

@@ -62,13 +62,15 @@ function Mint() {
     if (account) {
       setIsLoadingMint(true);
       try {
-        let txMint = await btc.mint(
-          {
-            amount: BigInt(parseFloat(formData!.amount) * 10 ** 10),
-            to: account!.address,
-          },
-          { fee: 100, secondsToWait: 20, responseType: "full" }
-        );
+        let txMint = (
+          await btc.mint(
+            {
+              amount: BigInt(parseFloat(formData!.amount) * 10 ** 10),
+              to: account!.address,
+            },
+            { fee: 100 }
+          )
+        ).signAndSend();
 
         toast({
           title: "Mint Successful!",

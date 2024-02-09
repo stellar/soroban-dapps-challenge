@@ -127,7 +127,7 @@ export const Wallet = () => {
     return (
       <>
         <CopyButton
-          str={formatShortAddress(walletAddress)}
+          str={String(formatShortAddress(walletAddress))}
           value={walletAddress}
           size={"xs"}
         />
