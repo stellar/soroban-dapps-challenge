@@ -20,7 +20,7 @@ const server = new Stellar.SorobanRpc.Server(
   }
 );
 
-const networkPassphrase = Stellar.Networks.TESTNET;
+const networkPassphrase = Stellar.Networks.FUTURENET;
 const fee = "100";
 
 const getTimestamp = async () => {
@@ -40,7 +40,7 @@ const getTimestamp = async () => {
         `[ERROR] [getTimestamp]: ${JSON.stringify(resultSimulation)}`
       );
     }
-    return Stellar.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result!.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getTimestamp] ERROR");
@@ -64,7 +64,7 @@ const getPairInfo = async () => {
         `[ERROR] [getPairInfo]: ${JSON.stringify(resultSimulation)}`
       );
     }
-    return Stellar.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result!.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getPairInfo] ERROR");
@@ -89,7 +89,7 @@ const getEpochData = async (epochNr) => {
       throw new Error(`[ERROR] [const getEpochData = async (epochNr) => {
         ]: ${JSON.stringify(resultSimulation)}`);
     }
-    return Stellar.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result!.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getEpochData] ERROR");
@@ -107,7 +107,7 @@ const getPairPrice = async (pairName) => {
       }
     );
     const result = await response.json();
-    return parseInt(String(parseFloat(result?.price)));
+    return parseInt(String(parseFloat(result?.price) * 10 ** 5));
   } catch (e) {
     console.error(e);
     throw new Error("[getPairPrice] ERROR");
