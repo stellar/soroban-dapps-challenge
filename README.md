@@ -127,7 +127,7 @@ npm install
 node cron-script.js
 ```
 
-### 7. Run
+### 5. Run
 
 ```sh
 npm run dev
@@ -135,4 +135,4 @@ npm run dev
 
 It will run the app frontend on port 3000 or other.
 
-### 8. Open the app and start using it.
+### 6. Open the app and start using it.
