@@ -1,38 +1,32 @@
-const cron = require("node-cron");
-const SorobanClient = require("soroban-client");
-const {
-  xdr,
-  Keypair,
-  Networks,
-  TransactionBuilder,
-  Contract,
-  Server,
-  nativeToScVal,
-  scValToNative,
-  Address,
-} = SorobanClient;
-const SorobanRpc = SorobanClient.SorobanRpc;
+// const cron = require("node-cron");
+// const Stellar = require("stellar-sdk");
+import cron from "node-cron";
+import * as Stellar from "stellar-sdk";
 
-const API_NINJA_KEY = "YOUR_API_KEY";
+const API_NINJA_KEY = "NWxSuwJoJa0icEhaQzk3IdomFmXK0qNG8lNZofY4";
 
-const sourceSecretKey = "YOUR_RELAYER_API_KEY";
-const sourceKeypair = SorobanClient.Keypair.fromSecret(sourceSecretKey);
+const sourceSecretKey =
+  "SCTW7YZCPF5KLB6ALZ2RBUIG3FQIVEJYK5OFCBHZU5637L44AD5OJZYS";
+const sourceKeypair = Stellar.Keypair.fromSecret(sourceSecretKey);
 const sourcePublicKey = sourceKeypair.publicKey();
 
-const contractId = "ADDRESS_OF_DEPLOYED_CONTRACT_ORACLE";
-const contract = new SorobanClient.Contract(contractId);
+const contractId = "CCBQX72IN35LRFTGINF5JQXDMUJLVX6VIS76KFEBUNDX5377SNT7QLVL";
+const contract = new Stellar.Contract(contractId);
 
-const server = new SorobanClient.Server("https://soroban-testnet.stellar.org", {
-  allowHttp: true,
-});
+const server = new Stellar.SorobanRpc.Server(
+  "https://soroban-testnet.stellar.org",
+  {
+    allowHttp: true,
+  }
+);
 
-const networkPassphrase = SorobanClient.Networks.FUTURENET;
+const networkPassphrase = Stellar.Networks.TESTNET;
 const fee = "100";
 
 const getTimestamp = async () => {
   let account = await server.getAccount(sourcePublicKey);
   try {
-    let transaction = new SorobanClient.TransactionBuilder(account, {
+    let transaction = new Stellar.TransactionBuilder(account, {
       fee,
       networkPassphrase,
     })
@@ -41,12 +35,12 @@ const getTimestamp = async () => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+    if (!Stellar.SorobanRpc.Api.isSimulationSuccess(resultSimulation)) {
       throw new Error(
         `[ERROR] [getTimestamp]: ${JSON.stringify(resultSimulation)}`
       );
     }
-    return SorobanClient.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getTimestamp] ERROR");
@@ -56,7 +50,7 @@ const getTimestamp = async () => {
 const getPairInfo = async () => {
   let account = await server.getAccount(sourcePublicKey);
   try {
-    let transaction = new SorobanClient.TransactionBuilder(account, {
+    let transaction = new Stellar.TransactionBuilder(account, {
       fee,
       networkPassphrase,
     })
@@ -65,12 +59,12 @@ const getPairInfo = async () => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+    if (!Stellar.SorobanRpc.Api.isSimulationSuccess(resultSimulation)) {
       throw new Error(
         `[ERROR] [getPairInfo]: ${JSON.stringify(resultSimulation)}`
       );
     }
-    return SorobanClient.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getPairInfo] ERROR");
@@ -80,9 +74,9 @@ const getPairInfo = async () => {
 const getEpochData = async (epochNr) => {
   let account = await server.getAccount(sourcePublicKey);
   try {
-    epochNr = SorobanClient.nativeToScVal(epochNr, { type: "u32" });
+    epochNr = Stellar.nativeToScVal(epochNr, { type: "u32" });
 
-    let transaction = new SorobanClient.TransactionBuilder(account, {
+    let transaction = new Stellar.TransactionBuilder(account, {
       fee,
       networkPassphrase,
     })
@@ -91,11 +85,11 @@ const getEpochData = async (epochNr) => {
       .build();
 
     let resultSimulation = await server.simulateTransaction(transaction);
-    if (!SorobanRpc.isSimulationSuccess(resultSimulation)) {
+    if (!Stellar.SorobanRpc.Api.isSimulationSuccess(resultSimulation)) {
       throw new Error(`[ERROR] [const getEpochData = async (epochNr) => {
         ]: ${JSON.stringify(resultSimulation)}`);
     }
-    return SorobanClient.scValToNative(resultSimulation.result.retval);
+    return Stellar.scValToNative(resultSimulation.result.retval);
   } catch (e) {
     console.error(e);
     throw new Error("[getEpochData] ERROR");
@@ -113,7 +107,7 @@ const getPairPrice = async (pairName) => {
       }
     );
     const result = await response.json();
-    return parseInt((parseFloat(result?.price) * 10 ** 5).toString());
+    return parseInt(String(parseFloat(result?.price) * 10 ** 5));
   } catch (e) {
     console.error(e);
     throw new Error("[getPairPrice] ERROR");
@@ -123,11 +117,11 @@ const getPairPrice = async (pairName) => {
 const updatePairPrice = async (price) => {
   try {
     let account = await server.getAccount(sourcePublicKey);
-    const value = SorobanClient.nativeToScVal(price, { type: "u32" });
-    const caller = new SorobanClient.Address(account.accountId()).toScVal();
+    const value = Stellar.nativeToScVal(price, { type: "u32" });
+    const caller = new Stellar.Address(account.accountId()).toScVal();
 
     const operation = contract.call("set_epoch_data", ...[caller, value]);
-    let transaction = new SorobanClient.TransactionBuilder(account, {
+    let transaction = new Stellar.TransactionBuilder(account, {
       fee,
       networkPassphrase,
     })
@@ -135,10 +129,7 @@ const updatePairPrice = async (price) => {
       .setTimeout(30)
       .build();
 
-    transaction = await server.prepareTransaction(
-      transaction,
-      networkPassphrase
-    );
+    transaction = await server.prepareTransaction(transaction);
     transaction.sign(sourceKeypair);
     let response = await server.sendTransaction(transaction);
     let resultSimulation = await server.simulateTransaction(transaction);
@@ -159,7 +150,7 @@ const updatePairPrice = async (price) => {
       await new Promise((resolve) => setTimeout(resolve, 60));
     }
 
-    if (SorobanRpc.isSimulationSuccess(resultSimulation)) {
+    if (Stellar.SorobanRpc.Api.isSimulationSuccess(resultSimulation)) {
       console.log("[updatePairPrice] SUCCESS");
       console.log("[updatePairPrice] Transaction status:", response.status);
     } else {
@@ -209,7 +200,7 @@ const main = async () => {
   }
 };
 
-cron.schedule("*/15 * * * *", async () => {
+cron.schedule("*/1 * * * *", async () => {
   console.log("Running a task every 15 minutes");
   console.log("Current Time: ", new Date());
   await main();
