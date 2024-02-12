@@ -10,11 +10,11 @@ const sourceSecretKey =
 const sourceKeypair = Stellar.Keypair.fromSecret(sourceSecretKey);
 const sourcePublicKey = sourceKeypair.publicKey();
 
-const contractId = "CCBQX72IN35LRFTGINF5JQXDMUJLVX6VIS76KFEBUNDX5377SNT7QLVL";
+const contractId = "CC34SHP4JBNOEKIOVO2ZUNMCRUUR7DWBMG65GRKVXF7TDYEQWS4CAO2D";
 const contract = new Stellar.Contract(contractId);
 
 const server = new Stellar.SorobanRpc.Server(
-  "https://soroban-testnet.stellar.org",
+  "https://rpc-futurenet.stellar.org	",
   {
     allowHttp: true,
   }
@@ -107,7 +107,7 @@ const getPairPrice = async (pairName) => {
       }
     );
     const result = await response.json();
-    return parseInt(String(parseFloat(result?.price) * 10 ** 5));
+    return parseInt(String(parseFloat(result?.price)));
   } catch (e) {
     console.error(e);
     throw new Error("[getPairPrice] ERROR");
