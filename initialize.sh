@@ -9,8 +9,7 @@ SOROBAN_RPC_HOST="$2"
 WASM_PATH="target/wasm32-unknown-unknown/release/"
 LIQUIDITY_POOL_WASM=$WASM_PATH"soroban_liquidity_pool_contract.optimized.wasm"
 ABUNDANCE_WASM=$WASM_PATH"abundance_token.optimized.wasm"
-TOKEN_WASM=contracts/liquidity-pool/token/soroban_token_contract.wasm
-
+TOKEN_WASM="contracts/liquidity-pool/token/soroban_token_contract.wasm"
 
 if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
   # If soroban-cli is called inside the soroban-preview docker container,
@@ -25,14 +24,13 @@ if [[ "$SOROBAN_RPC_HOST" == "" ]]; then
     SOROBAN_RPC_HOST="https://soroban-testnet.stellar.org:443"
     SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"
   else
-     # assumes standalone on quickstart, which has the soroban/rpc path
+    # assumes standalone on quickstart, which has the soroban/rpc path
     SOROBAN_RPC_HOST="http://localhost:8000"
     SOROBAN_RPC_URL="$SOROBAN_RPC_HOST/soroban/rpc"
   fi
-else 
-  SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"  
+else
+  SOROBAN_RPC_URL="$SOROBAN_RPC_HOST"
 fi
-
 
 case "$1" in
 standalone)
@@ -49,7 +47,7 @@ testnet)
   echo "Using Testnet network with RPC URL: $SOROBAN_RPC_URL"
   SOROBAN_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
   FRIENDBOT_URL="https://friendbot.stellar.org/"
-  ;;  
+  ;;
 *)
   echo "Usage: $0 standalone|futurenet|testnet [rpc-host]"
   exit 1
@@ -63,7 +61,7 @@ soroban config network add \
 
 if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
-  soroban config identity generate token-admin
+  soroban config identity generate token-admin --network $NETWORK
 fi
 TOKEN_ADMIN_SECRET="$(soroban config identity show token-admin)"
 TOKEN_ADMIN_ADDRESS="$(soroban config identity address token-admin)"
@@ -76,35 +74,32 @@ curl --silent -X POST "$FRIENDBOT_URL?addr=$TOKEN_ADMIN_ADDRESS" >/dev/null
 
 ARGS="--network $NETWORK --source token-admin"
 
-
 echo "Building contracts"
-./target/bin/soroban contract build
+soroban contract build
 echo "Optimizing contracts"
-./target/bin/soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
-./target/bin/soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
-
+soroban contract optimize --wasm $WASM_PATH"soroban_liquidity_pool_contract.wasm"
+soroban contract optimize --wasm $WASM_PATH"abundance_token.wasm"
 
 echo Deploy the liquidity pool contract
 LIQUIDITY_POOL_ID="$(
-  ./target/bin/soroban contract deploy $ARGS \
+  soroban contract deploy $ARGS \
     --wasm $LIQUIDITY_POOL_WASM
 )"
 echo "Liquidity Pool contract deployed succesfully with ID: $LIQUIDITY_POOL_ID"
 
 echo Deploy the abundance token A contract
 ABUNDANCE_A_ID="$(
-  ./target/bin/soroban contract deploy $ARGS \
+  soroban contract deploy $ARGS \
     --wasm $ABUNDANCE_WASM
 )"
 echo "Contract deployed succesfully with ID: $ABUNDANCE_A_ID"
 
 echo Deploy the abundance token B contract
 ABUNDANCE_B_ID="$(
-  ./target/bin/soroban contract deploy $ARGS \
+  soroban contract deploy $ARGS \
     --wasm $ABUNDANCE_WASM
 )"
 echo "Contract deployed succesfully with ID: $ABUNDANCE_B_ID"
-
 
 if [[ "$ABUNDANCE_B_ID" < "$ABUNDANCE_A_ID" ]]; then
   echo Changing tokens order
@@ -113,9 +108,8 @@ if [[ "$ABUNDANCE_B_ID" < "$ABUNDANCE_A_ID" ]]; then
   ABUNDANCE_B_ID=$OLD_ABUNDANCE_A_ID
 fi
 
-
 echo "Initialize the abundance token A contract"
-./target/bin/soroban contract invoke \
+soroban contract invoke \
   $ARGS \
   --id "$ABUNDANCE_A_ID" \
   -- \
@@ -125,9 +119,8 @@ echo "Initialize the abundance token A contract"
   --name USDCoin \
   --admin "$TOKEN_ADMIN_ADDRESS"
 
-
 echo "Initialize the abundance token B contract"
-./target/bin/soroban contract invoke \
+soroban contract invoke \
   $ARGS \
   --id "$ABUNDANCE_B_ID" \
   -- \
@@ -137,15 +130,15 @@ echo "Initialize the abundance token B contract"
   --name Bitcoin \
   --admin "$TOKEN_ADMIN_ADDRESS"
 
-
 echo "Installing token wasm contract"
-TOKEN_WASM_HASH="$(./target/bin/soroban contract install \
+TOKEN_WASM_HASH="$(
+  soroban contract install \
     $ARGS \
     --wasm $TOKEN_WASM
 )"
 
 echo "Initialize the liquidity pool contract"
-./target/bin/soroban contract invoke \
+soroban contract invoke \
   $ARGS \
   --id "$LIQUIDITY_POOL_ID" \
   -- \
@@ -154,23 +147,21 @@ echo "Initialize the liquidity pool contract"
   --token_a "$ABUNDANCE_A_ID" \
   --token_b "$ABUNDANCE_B_ID"
 
-
 echo "Getting the share id"
-SHARE_ID="$(./target/bin/soroban contract invoke \
-  $ARGS \
-  --id "$LIQUIDITY_POOL_ID" \
-  -- \
-  share_id
+SHARE_ID="$(
+  soroban contract invoke \
+    $ARGS \
+    --id "$LIQUIDITY_POOL_ID" \
+    -- \
+    share_id
 )"
 SHARE_ID=${SHARE_ID//\"/}
 echo "Share ID: $SHARE_ID"
 
-
 echo "Generating bindings"
-./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite
-./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite
-./target/bin/soroban contract bindings typescript --wasm $ABUNDANCE_WASM  --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/share-token-contract" --overwrite
-./target/bin/soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite
+soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_A_ID --output-dir ".soroban/contracts/token-a" --overwrite || true
+soroban contract bindings typescript --wasm $ABUNDANCE_WASM --network $NETWORK --contract-id $ABUNDANCE_B_ID --output-dir ".soroban/contracts/token-b" --overwrite || true
+soroban contract bindings typescript --wasm $TOKEN_WASM --network $NETWORK --contract-id $SHARE_ID --output-dir ".soroban/contracts/share-token" --overwrite || true
+soroban contract bindings typescript --wasm $LIQUIDITY_POOL_WASM --network $NETWORK --contract-id $LIQUIDITY_POOL_ID --output-dir ".soroban/contracts/liquidity-pool" --overwrite || true
 
 echo "Done"
-

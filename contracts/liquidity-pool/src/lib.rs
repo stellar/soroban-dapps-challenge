@@ -30,71 +30,71 @@ impl TryFromVal<Env, DataKey> for Val {
     }
 }
 
-fn get_token_a(e: &Env) -> Address {
+pub fn get_token_a(e: &Env) -> Address {
     e.storage().instance().get(&DataKey::TokenA).unwrap()
 }
 
-fn get_token_b(e: &Env) -> Address {
+pub fn get_token_b(e: &Env) -> Address {
     e.storage().instance().get(&DataKey::TokenB).unwrap()
 }
 
-fn get_token_share(e: &Env) -> Address {
+pub fn get_token_share(e: &Env) -> Address {
     e.storage().instance().get(&DataKey::TokenShare).unwrap()
 }
 
-fn get_total_shares(e: &Env) -> i128 {
+pub fn get_total_shares(e: &Env) -> i128 {
     e.storage().instance().get(&DataKey::TotalShares).unwrap()
 }
 
-fn get_reserve_a(e: &Env) -> i128 {
+pub fn get_reserve_a(e: &Env) -> i128 {
     e.storage().instance().get(&DataKey::ReserveA).unwrap()
 }
 
-fn get_reserve_b(e: &Env) -> i128 {
+pub fn get_reserve_b(e: &Env) -> i128 {
     e.storage().instance().get(&DataKey::ReserveB).unwrap()
 }
 
-fn get_balance(e: &Env, contract: Address) -> i128 {
+pub fn get_balance(e: &Env, contract: Address) -> i128 {
     token::Client::new(e, &contract).balance(&e.current_contract_address())
 }
 
-fn get_balance_a(e: &Env) -> i128 {
+pub fn get_balance_a(e: &Env) -> i128 {
     get_balance(e, get_token_a(e))
 }
 
-fn get_balance_b(e: &Env) -> i128 {
+pub fn get_balance_b(e: &Env) -> i128 {
     get_balance(e, get_token_b(e))
 }
 
-fn get_balance_shares(e: &Env) -> i128 {
+pub fn get_balance_shares(e: &Env) -> i128 {
     get_balance(e, get_token_share(e))
 }
 
-fn put_token_a(e: &Env, contract: Address) {
+pub fn put_token_a(e: &Env, contract: Address) {
     e.storage().instance().set(&DataKey::TokenA, &contract);
 }
 
-fn put_token_b(e: &Env, contract: Address) {
+pub fn put_token_b(e: &Env, contract: Address) {
     e.storage().instance().set(&DataKey::TokenB, &contract);
 }
 
-fn put_token_share(e: &Env, contract: Address) {
+pub fn put_token_share(e: &Env, contract: Address) {
     e.storage().instance().set(&DataKey::TokenShare, &contract);
 }
 
-fn put_total_shares(e: &Env, amount: i128) {
+pub fn put_total_shares(e: &Env, amount: i128) {
     e.storage().instance().set(&DataKey::TotalShares, &amount)
 }
 
-fn put_reserve_a(e: &Env, amount: i128) {
+pub fn put_reserve_a(e: &Env, amount: i128) {
     e.storage().instance().set(&DataKey::ReserveA, &amount)
 }
 
-fn put_reserve_b(e: &Env, amount: i128) {
+pub fn put_reserve_b(e: &Env, amount: i128) {
     e.storage().instance().set(&DataKey::ReserveB, &amount)
 }
 
-fn burn_shares(e: &Env, amount: i128) {
+pub fn burn_shares(e: &Env, amount: i128) {
     let total = get_total_shares(e);
     let share_contract = get_token_share(e);
 
@@ -102,7 +102,7 @@ fn burn_shares(e: &Env, amount: i128) {
     put_total_shares(e, total - amount);
 }
 
-fn mint_shares(e: &Env, to: Address, amount: i128) {
+pub fn mint_shares(e: &Env, to: Address, amount: i128) {
     let total = get_total_shares(e);
     let share_contract_id = get_token_share(e);
 
@@ -111,19 +111,19 @@ fn mint_shares(e: &Env, to: Address, amount: i128) {
     put_total_shares(e, total + amount);
 }
 
-fn transfer(e: &Env, token: Address, to: Address, amount: i128) {
+pub fn transfer(e: &Env, token: Address, to: Address, amount: i128) {
     token::Client::new(e, &token).transfer(&e.current_contract_address(), &to, &amount);
 }
 
-fn transfer_a(e: &Env, to: Address, amount: i128) {
+pub fn transfer_a(e: &Env, to: Address, amount: i128) {
     transfer(e, get_token_a(e), to, amount);
 }
 
-fn transfer_b(e: &Env, to: Address, amount: i128) {
+pub fn transfer_b(e: &Env, to: Address, amount: i128) {
     transfer(e, get_token_b(e), to, amount);
 }
 
-fn get_deposit_amounts(
+pub fn get_deposit_amounts(
     desired_a: i128,
     min_a: i128,
     desired_b: i128,
@@ -181,7 +181,6 @@ pub trait LiquidityPoolTrait {
     fn get_rsrvs(e: Env) -> (i128, i128);
 
     fn get_shares(e: Env) -> i128;
-
 
     fn balance(e: Env, user: Address) -> i128;
 }
@@ -359,8 +358,8 @@ impl LiquidityPoolTrait for LiquidityPool {
 
     fn balance(e: Env, user: Address) -> i128 {
         e.storage()
-        .instance()
-        .get::<_, i128>(&DataKey::TotalShares) 
-        .unwrap_or(0)
+            .instance()
+            .get(&DataKey::TotalShares)
+            .unwrap_or(100)
     }
 }
