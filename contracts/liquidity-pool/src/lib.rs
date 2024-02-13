@@ -1,5 +1,6 @@
 #![no_std]
 
+mod event;
 mod test;
 mod token;
 
@@ -155,7 +156,6 @@ contractmeta!(
     val = "Constant product AMM with a .3% swap fee"
 );
 
-
 pub trait LiquidityPoolTrait {
     // Sets the token contract addresses for this pool
     fn initialize(e: Env, token_wasm_hash: BytesN<32>, token_a: Address, token_b: Address);
@@ -243,9 +243,10 @@ impl LiquidityPoolTrait for LiquidityPool {
             (balance_a * balance_b).sqrt()
         };
 
-        mint_shares(&e, to, new_total_shares - total_shares);
+        mint_shares(&e, to.clone(), new_total_shares - total_shares);
         put_reserve_a(&e, balance_a);
         put_reserve_b(&e, balance_b);
+        event::deposit(&e, to, amounts.0, amounts.1);
     }
 
     fn swap(e: Env, to: Address, buy_a: bool, out: i128, in_max: i128) {
@@ -305,13 +306,15 @@ impl LiquidityPoolTrait for LiquidityPool {
         }
 
         if buy_a {
-            transfer_a(&e, to, out_a);
+            transfer_a(&e, to.clone(), out_a);
         } else {
-            transfer_b(&e, to, out_b);
+            transfer_b(&e, to.clone(), out_b);
         }
 
         put_reserve_a(&e, balance_a - out_a);
         put_reserve_b(&e, balance_b - out_b);
+
+        event::swap(&e, to, buy_a, sell_amount, out);
     }
 
     fn withdraw(e: Env, to: Address, share_amount: i128, min_a: i128, min_b: i128) -> (i128, i128) {
@@ -336,9 +339,11 @@ impl LiquidityPoolTrait for LiquidityPool {
 
         burn_shares(&e, balance_shares);
         transfer_a(&e, to.clone(), out_a);
-        transfer_b(&e, to, out_b);
+        transfer_b(&e, to.clone(), out_b);
         put_reserve_a(&e, balance_a - out_a);
         put_reserve_b(&e, balance_b - out_b);
+
+        event::withdraw(&e, to, out_a, out_b);
 
         (out_a, out_b)
     }
@@ -353,8 +358,8 @@ impl LiquidityPoolTrait for LiquidityPool {
 
     fn balance(e: Env, user: Address) -> i128 {
         e.storage()
-        .instance()
-        .get::<_, i128>(&DataKey::TotalShares) 
-        .unwrap_or(0)
+            .instance()
+            .get(&DataKey::TotalShares)
+            .unwrap_or(100)
     }
 }

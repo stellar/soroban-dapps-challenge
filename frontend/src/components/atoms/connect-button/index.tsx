@@ -1,19 +1,24 @@
 import React from 'react'
 
+import { SorobanContextType } from '@soroban-react/core'
 import { Button } from '@mui/material'
 
 export interface IConnectButtonProps {
-  label: string
-  onClick: () => void
+  label: string;
+  sorobanContext: SorobanContextType;
 }
 
-export const ConnectButton: React.FC<IConnectButtonProps> = ({
-  label,
-  onClick,
-}) => {
+export const ConnectButton: React.FC<IConnectButtonProps> = ({ label, sorobanContext }) => {
+  const { connect } = sorobanContext
+
+  const openConnectModal = async (): Promise<void> => {
+    await connect()
+  }
+
   return (
-    <Button onClick={onClick} variant="contained">
-      {label}
-    </Button>
+    <Button
+      onClick={openConnectModal}
+      variant='contained'
+    >{label}</Button>
   )
 }

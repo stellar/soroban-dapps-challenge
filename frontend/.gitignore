@@ -9,7 +9,6 @@
 /coverage
 
 # production
-dist
 /build
 storybook-static/
 
@@ -23,6 +22,3 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea/
-
-src/shared/config.json
-.vercel
