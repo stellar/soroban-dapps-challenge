@@ -56,10 +56,9 @@ soroban config network add \
 
 echo Add $NETWORK to .soroban for use with npm scripts
 mkdir -p .soroban
-mkdir -p .soroban-example-dapp
-echo $NETWORK >./.soroban-example-dapp/network
-echo $SOROBAN_RPC_URL >./.soroban-example-dapp/rpc-url
-echo "$SOROBAN_NETWORK_PASSPHRASE" >./.soroban-example-dapp/passphrase
+echo $NETWORK >./.soroban/network_choice
+echo $SOROBAN_RPC_URL >./.soroban/rpc-url
+echo "$SOROBAN_NETWORK_PASSPHRASE" >./.soroban/passphrase
 echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" >./shared/config.json
 
 if !(soroban config identity ls | grep example-user 2>&1 >/dev/null); then
@@ -68,10 +67,10 @@ if !(soroban config identity ls | grep example-user 2>&1 >/dev/null); then
 fi
 
 EXAMPLE_USER_ADDRESS="$(soroban config identity address example-user)"
-echo $EXAMPLE_USER_ADDRESS >./.soroban-example-dapp/address
+echo $EXAMPLE_USER_ADDRESS >./.soroban/address
 
 EXAMPLE_USER_SECRET="$(soroban config identity show example-user)"
-echo $EXAMPLE_USER_SECRET >./.soroban-example-dapp/secret
+echo $EXAMPLE_USER_SECRET >./.soroban/secret
 
 # This will fail if the account already exists, but it'll still be fine.
 echo Fund example-user account from friendbot
