@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "../../atoms";
-import { helloWorld } from '../../../shared/contracts'
+import { helloWorld } from "../../../shared/contracts";
 import styles from "./style.module.css";
 
 const HelloWorld = () => {
@@ -11,10 +11,9 @@ const HelloWorld = () => {
   const [message, setMessage] = useState([""]);
   const [incrementSuccess, setIncrementSuccess] = useState(false); // New state for tracking increment success
 
-
   const handleHello = async () => {
     try {
-      const helloTx = (await helloWorld.hello({ to }, { fee: 100 }));
+      const helloTx = await helloWorld.hello({ to }, { fee: 100 });
       await helloTx.signAndSend();
       console.log(`hello, ${to}`);
     } catch (error) {
@@ -24,7 +23,10 @@ const HelloWorld = () => {
 
   const handleIncrement = async () => {
     try {
-      const incrementTx = await helloWorld.increment({ incr: Number(incr) }, { fee: 100 });
+      const incrementTx = await helloWorld.increment(
+        { incr: Number(incr) },
+        { fee: 100 },
+      );
       await incrementTx.signAndSend();
       console.log(`incremented by ${incr}`);
       setIncrementSuccess(true); // Set success state to true on successful increment
@@ -66,7 +68,7 @@ const HelloWorld = () => {
   return (
     <div>
       <Card>
-      <h2>Call Contract Functions</h2>
+        <h2>Call Contract Functions</h2>
         <div className={styles.formGroup}>
           <label className={styles.label}>Recipient:</label>
           <input
@@ -75,7 +77,9 @@ const HelloWorld = () => {
             onChange={(e) => setTo(e.target.value)}
             className={styles.input}
           />
-          <button onClick={handleHello} className={styles.button}>Write Message</button>
+          <button onClick={handleHello} className={styles.button}>
+            Write Message
+          </button>
         </div>
         <br />
         <br />
@@ -87,17 +91,21 @@ const HelloWorld = () => {
             onChange={(e) => setIncr(e.target.value)}
             className={styles.input}
           />
-          <button onClick={handleIncrement} className={styles.button}>Increment</button>
+          <button onClick={handleIncrement} className={styles.button}>
+            Increment
+          </button>
         </div>
       </Card>
 
       {/* Next section here */}
       <div>
         <Card>
-        <h2>Get Contract State Variables</h2>
-          <button onClick={handleGetMessage} className={styles.button}>Get Message</button>
+          <h2>Get Contract State Variables</h2>
+          <button onClick={handleGetMessage} className={styles.button}>
+            Get Message
+          </button>
           <div>
-          <strong className={styles.strongText}>Message:</strong>
+            <strong className={styles.strongText}>Message:</strong>
             <br />
             <pre className={styles.preFormattedText}>{`${message}`}</pre>
           </div>
@@ -105,7 +113,9 @@ const HelloWorld = () => {
           {/* Next section here */}
 
           <div>
-            <button onClick={handleGetLastIncrement} className={styles.button}>Get Last Increment</button>
+            <button onClick={handleGetLastIncrement} className={styles.button}>
+              Get Last Increment
+            </button>
             <div>
               <strong className={styles.strongText}>Last Increment:</strong>
               <pre className={styles.preFormattedText}>{newIncrement}</pre>
@@ -113,7 +123,9 @@ const HelloWorld = () => {
           </div>
           {/* Next section here */}
           <div>
-            <button onClick={handleGetCount} className={styles.button}>Get Count</button>
+            <button onClick={handleGetCount} className={styles.button}>
+              Get Count
+            </button>
             <div>
               <strong className={styles.strongText}>Current Count:</strong>
               <pre className={styles.preFormattedText}>{count}</pre>

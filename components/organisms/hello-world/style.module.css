@@ -1,5 +1,3 @@
-
-
 .label {
   display: block; /* Ensure the label takes up its own line */
   font-size: 16px; /* Larger font size for better readability */
@@ -38,7 +36,7 @@
 }
 
 .button:hover {
-  background-color: #357abD; /* Darker shade on hover */
+  background-color: #357abd; /* Darker shade on hover */
 }
 
 .preFormattedText {
@@ -47,11 +45,11 @@
   padding: 8px; /* Padding for spacing inside the element */
   border: 1px solid #e0e0e0; /* Subtle border */
   overflow-x: auto; /* Enable horizontal scrolling for overflow content */
-  font-family: 'Courier New', Courier, monospace; /* Monospace font for code-like appearance */
+  font-family: "Courier New", Courier, monospace; /* Monospace font for code-like appearance */
   color: #333; /* Dark text for readability */
   font-size: 14px; /* Slightly smaller font size */
   margin-top: 8px; /* Space above the element */
-  font-weight: 550
+  font-weight: 550;
 }
 
 .strongText {

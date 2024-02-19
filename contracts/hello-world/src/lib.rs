@@ -49,7 +49,10 @@ impl HelloContract {
     /// The stored message as a vector of symbols.
     pub fn get_message(env: Env) -> Vec<Symbol> {
         // Get the message.
-        env.storage().instance().get(&MESSAGE).unwrap_or(vec![&env])
+        env.storage()
+            .instance()
+            .get(&MESSAGE)
+            .unwrap_or(vec![&env, symbol_short!("NoMSG")])
     }
 
     /// Increments the count by the specified value.

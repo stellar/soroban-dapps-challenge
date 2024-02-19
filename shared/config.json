@@ -1,1 +1,5 @@
-{ "network": "testnet", "rpcUrl": "https://soroban-testnet.stellar.org:443", "networkPassphrase": "Test SDF Network ; September 2015" }
+{
+  "network": "futurenet",
+  "rpcUrl": "https://rpc-futurenet.stellar.org:443",
+  "networkPassphrase": "Test SDF Future Network ; October 2022"
+}

@@ -4,19 +4,19 @@ import { isConnected, getUserInfo } from "@stellar/freighter-api";
 let address: string;
 
 let addressLookup = (async () => {
-  if (await isConnected()) return getUserInfo()
+  if (await isConnected()) return getUserInfo();
 })();
 
 // returning the same object identity every time avoids unnecessary re-renders
 const addressObject = {
-  address: '',
-  displayName: '',
+  address: "",
+  displayName: "",
 };
 
 const addressToHistoricObject = (address: string) => {
   addressObject.address = address;
   addressObject.displayName = `${address.slice(0, 4)}...${address.slice(-4)}`;
-  return addressObject
+  return addressObject;
 };
 
 /**
@@ -39,11 +39,15 @@ export function useAccount(): typeof addressObject | null {
     if (address !== undefined) return;
 
     addressLookup
-      .then(user => { if (user) address = user.publicKey })
-      .finally(() => { setLoading(false) });
+      .then((user) => {
+        if (user) address = user.publicKey;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   if (address) return addressToHistoricObject(address);
 
   return null;
-};
+}
