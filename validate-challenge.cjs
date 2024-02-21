@@ -149,7 +149,7 @@ async function validateProductionLink(productionLink) {
   }
 
   const isProductionLinkValid = await isLinkValid(productionLink);
-  return productionLink.startsWith("https") && productionLink.includes("vercel.app") && isProductionLinkValid;
+  return productionLink.includes("vercel.app") && isProductionLinkValid;
 }
 
 /**
