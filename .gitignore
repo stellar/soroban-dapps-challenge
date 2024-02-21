@@ -4,3 +4,4 @@ target
 .soroban-example-dapp/*
 .next/*
 .vercel
+shared/config.json
