@@ -59,6 +59,8 @@ soroban config network add \
   --rpc-url "$SOROBAN_RPC_URL" \
   --network-passphrase "$SOROBAN_NETWORK_PASSPHRASE" "$NETWORK"
 
+echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" >frontend/src/shared/config.json
+
 if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
   soroban config identity generate token-admin --network $NETWORK
