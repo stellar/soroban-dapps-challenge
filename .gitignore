@@ -11,6 +11,7 @@ yarn.lock
 
 # testing
 /coverage
+contracts/*/test_snapshots
 
 # next.js
 /.next/
