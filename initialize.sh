@@ -66,7 +66,7 @@ if !(soroban keys ls | grep token-admin 2>&1 >/dev/null); then
   soroban keys generate token-admin --network $NETWORK
 fi
 TOKEN_ADMIN_SECRET="$(soroban keys show token-admin)"
-TOKEN_ADMIN_ADDRESS="$(soroban keys identity address token-admin)"
+TOKEN_ADMIN_ADDRESS="$(soroban keys address token-admin)"
 
 mkdir -p .soroban
 
