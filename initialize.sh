@@ -55,18 +55,18 @@ testnet)
 esac
 
 echo Add the $NETWORK network to cli client
-soroban config network add \
+soroban network add \
   --rpc-url "$SOROBAN_RPC_URL" \
   --network-passphrase "$SOROBAN_NETWORK_PASSPHRASE" "$NETWORK"
 
 echo "{ \"network\": \"$NETWORK\", \"rpcUrl\": \"$SOROBAN_RPC_URL\", \"networkPassphrase\": \"$SOROBAN_NETWORK_PASSPHRASE\" }" >frontend/src/shared/config.json
 
-if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
+if !(soroban keys ls | grep token-admin 2>&1 >/dev/null); then
   echo Create the token-admin identity
-  soroban config identity generate token-admin --network $NETWORK
+  soroban keys generate token-admin --network $NETWORK
 fi
-TOKEN_ADMIN_SECRET="$(soroban config identity show token-admin)"
-TOKEN_ADMIN_ADDRESS="$(soroban config identity address token-admin)"
+TOKEN_ADMIN_SECRET="$(soroban keys show token-admin)"
+TOKEN_ADMIN_ADDRESS="$(soroban keys identity address token-admin)"
 
 mkdir -p .soroban
 
