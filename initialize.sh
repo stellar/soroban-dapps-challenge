@@ -72,7 +72,7 @@ mkdir -p .soroban
 
 # This will fail if the account already exists, but it'll still be fine.
 echo Fund token-admin account from friendbot
-curl --silent -X POST "$FRIENDBOT_URL?addr=$TOKEN_ADMIN_ADDRESS" >/dev/null
+soroban keys fund token-admin --network $NETWORK
 
 ARGS="--network $NETWORK --source token-admin"
 
